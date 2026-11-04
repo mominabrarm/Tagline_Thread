@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg:       #212529;
+    --color-ash:      #E9ECEF;
+    --color-orange:   #FB5607;
+    --color-purple:   #8338EC;
+    --color-surface:  #16181B;
+    --color-card:     #2A2E33;
+    --color-high:     #363A3E;
+    --color-muted:    #9BA3AF;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar { display: none; }
+
+  body {
+    @apply bg-brand-bg text-brand-ash font-geist antialiased;
+    overscroll-behavior: none;
+  }
+
+  * { box-sizing: border-box; }
+
+  ::selection {
+    background: rgba(251, 86, 7, 0.35);
+    color: #E9ECEF;
+  }
+}
+
+@layer components {
+  .section-label {
+    @apply inline-flex items-center gap-2 font-grotesk text-xs font-semibold uppercase tracking-[0.1em];
+  }
+
+  .section-title {
+    @apply font-syne text-4xl md:text-5xl font-bold tracking-tight leading-tight;
+  }
+
+  .section-body {
+    @apply font-geist text-lg text-muted leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full
+           bg-brand-orange text-[#16181B] font-grotesk text-sm font-bold uppercase tracking-widest
+           shadow-orange-glow hover:shadow-orange-glow-lg hover:scale-[1.02]
+           active:scale-[0.98] transition-all duration-300 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full
+           bg-surface-card/60 backdrop-blur-md text-brand-ash
+           font-grotesk text-sm font-bold uppercase tracking-widest
+           hover:bg-surface-high/80 transition-all duration-200 cursor-pointer;
+  }
+
+  .glass-card {
+    @apply bg-surface-card/70 backdrop-blur-xl border border-brand-ash/8 rounded-2xl;
+  }
+
+  .hairline {
+    @apply border border-brand-ash/[0.08];
+  }
+
+  .thread-glow {
+    box-shadow: 0 0 30px -5px rgba(251,86,7,0.35), 0 0 15px -3px rgba(131,56,236,0.25);
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-surface-base text-brand-ash
+           placeholder:text-muted/50 font-geist text-base
+           border border-brand-ash/[0.08] focus:border-brand-orange/60
+           focus:outline-none focus:ring-1 focus:ring-brand-orange/40
+           transition-all duration-200;
+  }
+}
+
+/* Film grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* Smooth focus rings */
+*:focus-visible {
+  outline: 2px solid rgba(251,86,7,0.7);
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
