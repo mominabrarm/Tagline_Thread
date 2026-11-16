@@ -1,279 +1,435 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react'
-import { Canvas } from '@react-three/fiber'
+import React, { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { ThreadScene } from '../three/ThreadScene'
+import {
+  Target,
+  Layers,
+  Box,
+  Rocket,
+  TrendingUp,
+  Play,
+  ArrowUpRight,
+  Laptop,
+  Megaphone,
+  Users,
+  Video,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const STAGES = [
+interface StepData {
+  num: string
+  title: string
+  desc: string
+  accent: 'orange' | 'purple'
+  icon: LucideIcon
+  elevate: number // pixel offset for ascending fan
+  rotateZ: number
+}
+
+const STEPS: StepData[] = [
   {
-    index: '// STAGE 01',
-    title: 'Branding & Identity',
-    desc:  'Geometrical marks, typography signatures & emotional retention.',
-    log:   '// LOG: Generating cohesive geometric tokens and high-impact identity signatures.',
-    accent: 'orange' as const,
+    num: '01',
+    title: 'Discover',
+    desc: 'Understand your goals, audience and core requirements.',
+    accent: 'orange',
+    icon: Target,
+    elevate: 40,
+    rotateZ: -3,
   },
   {
-    index: '// STAGE 02',
-    title: 'Websites & Flagships',
-    desc:  'Living responsive viewports, frictionless conversion, tactile UX.',
-    log:   '// LOG: Compiling 60fps canvas viewport, responsive DOM tree, and instant checkout pathways.',
-    accent: 'purple' as const,
+    num: '02',
+    title: 'Plan',
+    desc: 'Shape the right strategy, creative direction and execution roadmap.',
+    accent: 'purple',
+    icon: Layers,
+    elevate: 20,
+    rotateZ: -1.5,
   },
   {
-    index: '// STAGE 03',
-    title: 'Social Media Management',
-    desc:  'Curated feeds, continuous cultural cadence, editorial calendars.',
-    log:   '// LOG: Scheduling 30-day algorithmic video narrative assets across short-form platforms.',
-    accent: 'purple' as const,
+    num: '03',
+    title: 'Create',
+    desc: 'Design, develop and produce the required assets and experiences.',
+    accent: 'orange',
+    icon: Box,
+    elevate: 0,
+    rotateZ: 0,
   },
   {
-    index: '// STAGE 04',
-    title: 'Social Media Marketing',
-    desc:  'Dynamic hyper-targeted particle nets generating verified ROAS.',
-    log:   '// LOG: Tracking real-time pixel telemetry, high-intent cohorts, and conversion funnel margins.',
-    accent: 'orange' as const,
+    num: '04',
+    title: 'Deliver',
+    desc: 'Launch, publish and set everything live across the right platforms.',
+    accent: 'purple',
+    icon: Rocket,
+    elevate: -20,
+    rotateZ: 1.5,
   },
   {
-    index: '// SYNTHESIS',
-    title: 'Unified Ecosystem',
-    desc:  'All channels interconnected into a perpetual enterprise growth loop.',
-    log:   '// LOG: Complete synchronization achieved. All 4 conduits feeding 360-degree brand authority.',
-    accent: 'orange' as const,
+    num: '05',
+    title: 'Grow',
+    desc: 'Track, optimize and scale for long-term compounding results.',
+    accent: 'orange',
+    icon: TrendingUp,
+    elevate: -40,
+    rotateZ: 3,
   },
 ]
 
-// SVG fallback for the thread engine visual area
-const ThreadFallback: React.FC<{ stage: number }> = ({ stage }) => {
-  const colors = ['#FB5607', '#8338EC', '#8338EC', '#FB5607', '#FB5607']
-  const c = colors[stage]
-  return (
-    <div className="w-full h-full flex items-center justify-center">
-      <svg viewBox="0 0 400 300" fill="none" className="w-full max-w-sm opacity-70">
-        <path d="M20 150 C100 60, 180 240, 260 150 S 360 60, 400 150" stroke={c} strokeWidth="2" strokeDasharray="8 4" />
-        <path d="M20 150 C80 240, 180 60, 260 150 S 360 240, 400 150" stroke="#8338EC" strokeWidth="1.2" strokeDasharray="4 6" opacity="0.6" />
-        <circle cx="200" cy="150" r="12" fill={c} opacity="0.9" />
-        <circle cx="200" cy="150" r="22" stroke={c} strokeWidth="1" fill="none" opacity="0.4" />
-        <circle cx="100" cy="90" r="6" fill="#8338EC" opacity="0.7" />
-        <circle cx="300" cy="210" r="6" fill={c} opacity="0.7" />
-        <text x="200" y="260" textAnchor="middle" fill="#E9ECEF" fontFamily="Space Grotesk" fontSize="11" opacity="0.5">
-          STAGE {String(stage + 1).padStart(2, '0')} // ACTIVE
-        </text>
-      </svg>
-    </div>
-  )
-}
+const SERVICE_TAGS = [
+  { label: 'Websites', icon: Laptop },
+  { label: 'Marketing', icon: Megaphone },
+  { label: 'Social Media', icon: Users },
+  { label: 'Content', icon: Video },
+  { label: 'And More', icon: Sparkles },
+]
 
 export const ThreadEngine: React.FC = () => {
-  const reduced      = useReducedMotion()
-  const sectionRef   = useRef<HTMLElement>(null)
-  const [stage, setStage] = useState(0)
-  const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [webGLOk, setWebGLOk] = useState(true)
+  const reduced = useReducedMotion()
+  const sectionRef = useRef<HTMLElement>(null)
+  const leftRef = useRef<HTMLDivElement>(null)
+  const fanRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
+  const [activeCard, setActiveCard] = useState<number | null>(null)
 
-  useEffect(() => {
-    try {
-      const c = document.createElement('canvas')
-      if (!c.getContext('webgl') && !c.getContext('experimental-webgl')) setWebGLOk(false)
-    } catch { setWebGLOk(false) }
-  }, [])
-
-  // Auto-cycle
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setStage(s => (s + 1) % STAGES.length)
-    }, 5500)
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [])
-
-  // Scroll entrance
   useEffect(() => {
     if (reduced || !sectionRef.current) return
+
     const ctx = gsap.context(() => {
-      gsap.fromTo('.engine-header',
+      // Left side text reveal
+      gsap.fromTo(
+        leftRef.current,
+        { opacity: 0, x: -35 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.85,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: leftRef.current,
+            start: 'top 82%',
+            once: true,
+          },
+        }
+      )
+
+      // 5-card ascending fan stagger reveal
+      gsap.fromTo(
+        '.approach-fan-card',
+        { opacity: 0, y: 50, scale: 0.94 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.75,
+          ease: 'power3.out',
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: fanRef.current,
+            start: 'top 80%',
+            once: true,
+          },
+        }
+      )
+
+      // Thread spline path draw-in
+      gsap.fromTo(
+        '.approach-thread-line',
+        { strokeDashoffset: 1200 },
+        {
+          strokeDashoffset: 0,
+          duration: 1.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: fanRef.current,
+            start: 'top 80%',
+            once: true,
+          },
+        }
+      )
+
+      // Bottom banner
+      gsap.fromTo(
+        bannerRef.current,
         { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: '.engine-header', start: 'top 85%', once: true } }
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: bannerRef.current,
+            start: 'top 88%',
+            once: true,
+          },
+        }
       )
     }, sectionRef)
+
     return () => ctx.revert()
   }, [reduced])
-
-  const handleTabClick = (idx: number) => {
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    setStage(idx)
-    intervalRef.current = setInterval(() => setStage(s => (s + 1) % STAGES.length), 5500)
-  }
-
-  const currentStage = STAGES[stage]
-  const accentColor  = currentStage.accent === 'orange' ? '#FB5607' : '#8338EC'
-  const accentClass  = currentStage.accent === 'orange' ? 'text-brand-orange' : 'text-brand-purple'
 
   return (
     <section
       ref={sectionRef}
       id="the-engine"
-      className="relative w-full py-24 px-6 lg:px-24 bg-brand-bg overflow-hidden"
+      className="relative w-full py-24 sm:py-32 px-6 lg:px-16 bg-[#101519] overflow-hidden"
     >
-      {/* Ambient glow */}
-      <div className="absolute -right-32 top-1/2 w-96 h-96 bg-brand-orange/8 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute left-0 bottom-0 w-80 h-80 bg-brand-purple/10 blur-[110px] rounded-full pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto space-y-12">
-        {/* Header */}
-        <div className="engine-header flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
-            <div className="section-label text-brand-purple">
-              <span className="w-1 h-1 rounded-full bg-current inline-block" />
-              02 // Signature Apparatus
+      <div className="max-w-7xl mx-auto space-y-16">
+        {/* ── Main Two-Column Stage ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          {/* Left Column: Headline & Editorial Context */}
+          <div ref={leftRef} className="lg:col-span-5 flex flex-col items-start gap-6">
+            {/* Top Badge: 01 / OUR APPROACH */}
+            <div className="inline-flex items-center gap-3">
+              <span className="section-label text-[#8824FF]">
+                01 / OUR APPROACH
+              </span>
+              <div className="w-12 h-px bg-gradient-to-r from-[#8824FF] to-transparent" />
             </div>
-            <h2 className="font-syne text-4xl md:text-5xl font-bold text-brand-ash tracking-tight">
-              The Thread Engine
+
+            {/* Headline */}
+            <h2 className="heading-section text-[#E9ECEF]">
+              From the first idea
+              <br />
+              to a{' '}
+              <span className="text-[#FF5400] neon-text-orange italic font-normal" style={{ fontStyle: 'italic' }}>
+                lasting identity.
+              </span>
             </h2>
-            <p className="font-geist text-lg text-muted max-w-lg leading-relaxed">
-              Interactive visualization of our unified ecosystem. Explore how distinct disciplines bind into one cohesive power circuit.
+
+            {/* Description */}
+            <p className="text-body text-[#E9ECEF]/70 max-w-lg">
+              A structured, creative and collaborative process that turns your goals into a
+              complete digital experience, for any platform, any audience and any business need.
             </p>
+
+            {/* Dual CTAs */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              {/* Primary CTA */}
+              <a
+                href="#contact"
+                className="btn-text inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[#0C0E10] bg-[#FF5400] shadow-[0_0_25px_rgba(255,84,0,0.45)] hover:shadow-[0_0_40px_rgba(255,84,0,0.7)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              >
+                <span>See How We Work</span>
+                <ArrowUpRight size={16} strokeWidth={2.5} />
+              </a>
+
+              {/* Play Video Trigger */}
+              <button
+                type="button"
+                onClick={() => {
+                  const target = document.querySelector('#services')
+                  target?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="btn-text inline-flex items-center gap-3 px-5 py-3 rounded-full text-[#E9ECEF] hover:text-[#FF5400] bg-[#181B1F]/60 hover:bg-[#181B1F] border border-[#E9ECEF]/10 hover:border-[#FF5400]/40 backdrop-blur-md transition-all duration-300 group"
+              >
+                <span className="w-7 h-7 rounded-full bg-[#FF5400]/15 group-hover:bg-[#FF5400] flex items-center justify-center text-[#FF5400] group-hover:text-[#0C0E10] transition-colors duration-300">
+                  <Play size={12} className="ml-0.5 fill-current" />
+                </span>
+                <span>Our Process &bull; 1:24</span>
+              </button>
+            </div>
           </div>
 
-          <div className="inline-flex p-1 rounded-full bg-surface-card/80 backdrop-blur-md"
-               style={{ border: '1px solid rgba(233,236,239,0.06)' }}>
-            <span className="px-4 py-1.5 rounded-full font-grotesk text-[11px] uppercase bg-brand-orange text-[#16181B] font-bold">
-              Live Telemetry
-            </span>
-            <span className="px-4 py-1.5 font-grotesk text-[11px] uppercase text-muted">
-              Engine Rev 4.2
-            </span>
+          {/* Right Column: 5-Card Ascending Diagonal 3D Perspective Fan */}
+          <div
+            ref={fanRef}
+            className="lg:col-span-7 relative pt-8 pb-12 overflow-visible"
+            style={{ perspective: '1200px' }}
+          >
+            {/* Continuous Glowing Neon Thread Ribbon */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-20"
+              viewBox="0 0 650 380"
+              fill="none"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="fanRibbonGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FF5400" stopOpacity="0.85" />
+                  <stop offset="45%" stopColor="#8824FF" stopOpacity="0.9" />
+                  <stop offset="80%" stopColor="#FF5400" stopOpacity="0.85" />
+                  <stop offset="100%" stopColor="#E9ECEF" stopOpacity="0.7" />
+                </linearGradient>
+                <filter id="ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="glow" />
+                  <feMerge>
+                    <feMergeNode in="glow" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Glowing Ambient Path */}
+              <path
+                d="M 20 280 C 130 320, 180 200, 270 210 S 420 130, 490 100 S 580 40, 630 60"
+                stroke="url(#fanRibbonGrad)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                fill="none"
+                filter="url(#ribbonGlow)"
+                className="opacity-70"
+              />
+
+              {/* Crisp Center Kinetic Fiber */}
+              <path
+                d="M 20 280 C 130 320, 180 200, 270 210 S 420 130, 490 100 S 580 40, 630 60"
+                stroke="#FFFFFF"
+                strokeWidth="1.5"
+                strokeDasharray="6 8"
+                strokeLinecap="round"
+                fill="none"
+                className="approach-thread-line opacity-85"
+                style={{ strokeDasharray: 1200 }}
+              />
+            </svg>
+
+            {/* 5 Tall Glass Cards in Ascending Diagonal Fan */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 sm:gap-3 lg:gap-4 items-end relative z-10">
+              {STEPS.map((step, idx) => {
+                const isOrange = step.accent === 'orange'
+                const accentColor = isOrange ? '#FF5400' : '#8824FF'
+                const isHovered = activeCard === idx
+                const IconComponent = step.icon
+
+                return (
+                  <div
+                    key={step.num}
+                    className="approach-fan-card group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-500 ease-out min-h-[300px] sm:min-h-[360px]"
+                    style={{
+                      background: isHovered
+                        ? 'linear-gradient(180deg, rgba(35,39,45,0.88) 0%, rgba(18,20,23,0.92) 100%)'
+                        : 'linear-gradient(180deg, rgba(24,27,31,0.68) 0%, rgba(12,14,16,0.78) 100%)',
+                      backdropFilter: 'blur(24px)',
+                      WebkitBackdropFilter: 'blur(24px)',
+                      border: isHovered
+                        ? `1px solid ${accentColor}90`
+                        : '1px solid rgba(233,236,239,0.11)',
+                      boxShadow: isHovered
+                        ? `0 0 35px -5px ${accentColor}55, 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.18)`
+                        : '0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)',
+                      transform: isHovered
+                        ? `translateY(${step.elevate - 14}px) rotateZ(0deg) scale(1.05)`
+                        : `translateY(${step.elevate}px) rotateZ(${step.rotateZ}deg) scale(1)`,
+                      transformOrigin: 'bottom center',
+                      zIndex: isHovered ? 30 : idx + 1,
+                    }}
+                    onMouseEnter={() => setActiveCard(idx)}
+                    onMouseLeave={() => setActiveCard(null)}
+                  >
+                    {/* Top Edge Neon Color Glow */}
+                    <div
+                      className="absolute top-0 left-4 right-4 h-0.5 rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
+                        boxShadow: `0 0 12px ${accentColor}`,
+                      }}
+                    />
+
+                    {/* Atmospheric internal radial glow on hover */}
+                    <div
+                      className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                      style={{
+                        background: `radial-gradient(circle at 50% 20%, ${accentColor}18 0%, transparent 70%)`,
+                      }}
+                    />
+
+                    {/* Card Content Top: 3D-styled luminous Icon badge */}
+                    <div className="relative z-10 flex flex-col items-start gap-4">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                        style={{
+                          background: `linear-gradient(135deg, ${accentColor}25 0%, rgba(28,32,36,0.6) 100%)`,
+                          border: `1px solid ${accentColor}50`,
+                          boxShadow: `0 0 20px -3px ${accentColor}40, inset 0 1px 0 rgba(255,255,255,0.15)`,
+                        }}
+                      >
+                        <IconComponent
+                          size={22}
+                          color={accentColor}
+                          className="transition-colors duration-300"
+                        />
+                      </div>
+
+                      {/* Stage Index Pill */}
+                      <span
+                        className="font-grotesk text-xs font-semibold tracking-[0.14em] uppercase px-2 py-0.5 rounded-md"
+                        style={{
+                          color: accentColor,
+                          background: `${accentColor}15`,
+                          border: `1px solid ${accentColor}30`,
+                        }}
+                      >
+                        {step.num}
+                      </span>
+                    </div>
+
+                    {/* Card Content Bottom: Title & Description */}
+                    <div className="relative z-10 flex flex-col gap-2 pt-6">
+                      <h3 className="card-heading text-[#E9ECEF] group-hover:text-white transition-colors">
+                        {step.title}
+                      </h3>
+                      <p className="card-desc text-[#E9ECEF]/70 leading-relaxed group-hover:text-[#E9ECEF]/90 transition-colors">
+                        {step.desc}
+                      </p>
+
+                      {/* Active indicator bar */}
+                      <div
+                        className="w-full h-0.5 mt-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+                        style={{ background: accentColor }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Main workspace */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Stage tabs */}
-          <div className="lg:col-span-4 flex flex-col gap-3">
-            {STAGES.map((s, i) => {
-              const isActive = stage === i
-              const tabAccent = s.accent === 'orange' ? '#FB5607' : '#8338EC'
-              return (
-                <button
-                  key={i}
-                  onClick={() => handleTabClick(i)}
-                  className={`text-left p-4 rounded-xl transition-all duration-300 cursor-pointer group ${
-                    isActive
-                      ? 'bg-surface-card shadow-card-hover'
-                      : 'bg-surface-card/40 hover:bg-surface-card/70'
-                  }`}
-                  style={{
-                    border: isActive
-                      ? `1px solid ${tabAccent}40`
-                      : '1px solid rgba(233,236,239,0.06)',
-                  }}
-                  aria-pressed={isActive}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="font-grotesk text-[11px] uppercase font-bold tracking-wider"
-                      style={{ color: isActive ? tabAccent : 'rgba(155,163,175,0.7)' }}
-                    >
-                      {s.index}
-                    </span>
-                    <svg
-                      width="16" height="16" viewBox="0 0 16 16" fill="none"
-                      className={`transition-transform duration-200 ${isActive ? 'translate-x-0.5' : 'group-hover:translate-x-0.5'}`}
-                    >
-                      <path d="M4 8h8M9 5l3 3-3 3" stroke={isActive ? tabAccent : '#9BA3AF'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <div className="font-syne text-base font-bold text-brand-ash mt-1">{s.title}</div>
-                  <p className="font-geist text-xs text-muted mt-1 leading-relaxed">{s.desc}</p>
-                </button>
-              )
-            })}
+        {/* ── Bottom Banner: [ A Flexible Process. For Every Service. ] ── */}
+        <div
+          ref={bannerRef}
+          className="relative rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, rgba(24,27,31,0.7) 0%, rgba(12,14,16,0.85) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(233,236,239,0.12)',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}
+        >
+          {/* Subtle neon horizontal gradient rail */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#FF5400]/40 to-transparent pointer-events-none" />
+
+          {/* Left Title */}
+          <div className="flex items-center gap-3">
+            <span className="font-playfair text-base sm:text-lg font-semibold text-[#E9ECEF] tracking-tight">
+              A Flexible Process. For Every Service.
+            </span>
           </div>
 
-          {/* Canvas viewport */}
-          <div
-            className="lg:col-span-8 p-5 rounded-2xl bg-surface-card/60 backdrop-blur-2xl flex flex-col justify-between relative overflow-hidden shadow-2xl min-h-[440px]"
-            style={{ border: '1px solid rgba(233,236,239,0.08)' }}
-          >
-            {/* HUD bar */}
-            <div className="flex items-center justify-between pb-4 relative z-10">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-brand-orange" />
-                <span className="w-3 h-3 rounded-full bg-brand-purple" />
-                <span className="w-3 h-3 rounded-full bg-muted/50" />
-                <span className="font-grotesk text-xs font-bold uppercase text-brand-ash pl-2">
-                  {`STAGE ${String(stage + 1).padStart(2, '0')} // ${currentStage.title.toUpperCase()} MONITOR`}
-                </span>
-              </div>
-              <span
-                className="font-mono text-[10px] px-2 py-1 rounded"
-                style={{ background: `${accentColor}18`, color: accentColor }}
-              >
-                STATUS: SYNCED
-              </span>
-            </div>
-
-            {/* 3D scene or fallback */}
-            <div className="flex-1 relative z-10">
-              {webGLOk && !reduced ? (
-                <Canvas
-                  camera={{ position: [0, 0, 3.5], fov: 55 }}
-                  gl={{ antialias: true, alpha: true }}
-                  style={{ background: 'transparent', height: '280px' }}
-                  dpr={[1, 1.5]}
+          {/* Category Icons Row */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            {SERVICE_TAGS.map((item) => {
+              const Icon = item.icon
+              return (
+                <div
+                  key={item.label}
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0C0E10]/60 hover:bg-[#181B1F] border border-[#E9ECEF]/10 hover:border-[#FF5400]/40 transition-all duration-200 group"
                 >
-                  <Suspense fallback={null}>
-                    <ThreadScene stage={stage} />
-                  </Suspense>
-                </Canvas>
-              ) : (
-                <div style={{ height: '280px' }}>
-                  <ThreadFallback stage={stage} />
+                  <Icon size={14} className="text-[#FF5400] group-hover:scale-110 transition-transform" />
+                  <span className="font-manrope text-xs text-[#E9ECEF]/80 group-hover:text-[#E9ECEF] font-medium">
+                    {item.label}
+                  </span>
                 </div>
-              )}
-            </div>
-
-            {/* SVG thread conduit */}
-            <div className="relative z-10 mt-2 p-4 rounded-xl bg-surface-base/80 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className={`font-grotesk text-[11px] font-bold uppercase tracking-wider ${accentClass}`}>
-                  Active Thread Flow
-                </span>
-                <span className="font-grotesk text-[11px] text-brand-orange">Pulse: 120Hz</span>
-              </div>
-              <div className="w-full h-16 relative overflow-hidden rounded-lg bg-surface-high/30 flex items-center justify-center">
-                <svg className="w-full h-full" viewBox="0 0 400 60" fill="none">
-                  <path
-                    d="M10 30 C 90 5, 110 55, 190 30 S 290 5, 390 30"
-                    stroke={accentColor} strokeDasharray="8 4" strokeWidth="2"
-                    style={{ animation: 'none' }}
-                    opacity="0.9"
-                  />
-                  <path
-                    d="M10 30 C 70 55, 130 5, 200 30 S 330 55, 390 30"
-                    stroke={currentStage.accent === 'orange' ? '#8338EC' : '#FB5607'} strokeDasharray="4 6" strokeWidth="1.2"
-                    opacity="0.5"
-                  />
-                  <circle cx="190" cy="30" r="5" fill={accentColor} opacity="0.9" />
-                  <circle cx="100" cy="17" r="3" fill="#8338EC" opacity="0.7" />
-                  <circle cx="300" cy="43" r="3" fill={accentColor} opacity="0.6" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Console log */}
-            <div className="relative z-10 mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 rounded-lg bg-surface-base/40">
-              <span className="font-mono text-xs text-muted">{currentStage.log}</span>
-              <span className="font-grotesk text-[10px] uppercase text-brand-ash px-2 py-1 rounded bg-surface-high/60">
-                Auto-Cycle: Active
-              </span>
-            </div>
+              )
+            })}
           </div>
         </div>
       </div>
     </section>
   )
 }
-

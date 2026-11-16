@@ -21,11 +21,24 @@ export const WhatsAppButton: React.FC = () => {
         }`}
       >
         <div
-          className="max-w-[220px] p-3 rounded-xl bg-surface-high text-brand-ash font-geist text-xs leading-relaxed shadow-2xl"
-          style={{ border: '1px solid rgba(233,236,239,0.1)' }}
+          className="max-w-[230px] p-3.5 rounded-xl text-brand-ash font-manrope text-xs leading-relaxed relative"
+          style={{
+            background: 'rgba(12, 14, 16, 0.88)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(233, 236, 239, 0.12)',
+            boxShadow: '0 16px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}
         >
           Hi Tagline-Thread! I'm interested in your services.
-          <div className="absolute bottom-[-5px] right-5 w-2.5 h-2.5 bg-surface-high rotate-45" style={{ border: '0 1px 1px 0 solid rgba(233,236,239,0.1)' }} />
+          <div
+            className="absolute bottom-[-5px] right-6 w-2.5 h-2.5 rotate-45"
+            style={{
+              background: 'rgba(12, 14, 16, 0.88)',
+              borderRight: '1px solid rgba(233, 236, 239, 0.12)',
+              borderBottom: '1px solid rgba(233, 236, 239, 0.12)',
+            }}
+          />
         </div>
       </div>
 
@@ -34,9 +47,15 @@ export const WhatsAppButton: React.FC = () => {
         {/* Dismiss */}
         <button
           onClick={() => setDismissed(true)}
-          className="w-7 h-7 rounded-full bg-surface-card/80 flex items-center justify-center text-muted hover:text-brand-ash transition-colors opacity-0 group-hover:opacity-100"
+          className="w-7 h-7 rounded-full flex items-center justify-center text-muted hover:text-brand-ash transition-colors"
           aria-label="Dismiss WhatsApp button"
-          style={{ opacity: tooltipVisible ? 1 : 0, transition: 'opacity 0.2s' }}
+          style={{
+            background: 'rgba(24, 27, 31, 0.70)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(233, 236, 239, 0.10)',
+            opacity: tooltipVisible ? 1 : 0,
+            transition: 'opacity 0.2s',
+          }}
         >
           <X size={12} />
         </button>
@@ -47,11 +66,13 @@ export const WhatsAppButton: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Open WhatsApp conversation with Tagline-Thread"
-          className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+          className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 relative"
           style={{
-            background: '#16181B',
-            border: '1px solid rgba(37,211,102,0.3)',
-            boxShadow: '0 0 24px rgba(131,56,236,0.35), 0 0 10px rgba(37,211,102,0.2)',
+            background: 'linear-gradient(135deg, rgba(34, 38, 42, 0.95) 0%, rgba(18, 20, 22, 0.95) 100%)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(37, 211, 102, 0.4)',
+            boxShadow: '0 0 28px rgba(136, 36, 255, 0.35), 0 0 16px rgba(37, 211, 102, 0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
           }}
         >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">

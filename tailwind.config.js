@@ -7,21 +7,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand Palette - Volcanic Ash
-        'brand-bg':        '#212529',
+        // Brand Palette - Volcanic Ash (Darker near-black dominant & hyper-saturated accents)
+        'brand-bg':        '#101519',
         'brand-ash':       '#E9ECEF',
-        'brand-orange':    '#FB5607',
-        'brand-purple':    '#8338EC',
+        'brand-orange':    '#FF5400',
+        'brand-purple':    '#8824FF',
         // Surface tiers
-        'surface-base':    '#16181B',
-        'surface-card':    '#2A2E33',
-        'surface-high':    '#363A3E',
+        'surface-base':    '#0C0E10',
+        'surface-card':    '#181B1F',
+        'surface-high':    '#23272D',
         'muted':           '#9BA3AF',
       },
       fontFamily: {
-        'syne':         ['Syne', 'sans-serif'],
-        'geist':        ['Geist', 'sans-serif'],
-        'grotesk':      ['Space Grotesk', 'sans-serif'],
+        'playfair':     ['"Playfair Display"', 'Georgia', 'serif'],
+        'manrope':      ['Manrope', 'sans-serif'],
+        'grotesk':      ['"Space Grotesk"', 'sans-serif'],
+        'sans':         ['Manrope', 'sans-serif'],
+        'geist':        ['Manrope', 'sans-serif'],
+        'syne':         ['"Playfair Display"', 'Georgia', 'serif'],
       },
       animation: {
         'ping-slow':  'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -35,14 +38,14 @@ export default {
         },
       },
       backgroundImage: {
-        'orange-purple': 'linear-gradient(135deg, #FB5607, #8338EC)',
-        'hero-radial':   'radial-gradient(ellipse at 30% 50%, rgba(251,86,7,0.15) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(131,56,236,0.18) 0%, transparent 60%)',
+        'orange-purple': 'linear-gradient(135deg, #FF5400, #8824FF)',
+        'hero-radial':   'radial-gradient(ellipse at 30% 50%, rgba(255,84,0,0.18) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(136,36,255,0.20) 0%, transparent 60%)',
       },
       boxShadow: {
-        'orange-glow':   '0 0 30px -5px rgba(251,86,7,0.45)',
-        'orange-glow-lg':'0 0 50px -3px rgba(251,86,7,0.6)',
-        'purple-glow':   '0 0 25px -5px rgba(131,56,236,0.4)',
-        'card-hover':    '0 0 30px -5px rgba(251,86,7,0.35), 0 0 15px -3px rgba(131,56,236,0.25)',
+        'orange-glow':   '0 0 30px -5px rgba(255,84,0,0.5)',
+        'orange-glow-lg':'0 0 50px -3px rgba(255,84,0,0.7)',
+        'purple-glow':   '0 0 25px -5px rgba(136,36,255,0.45)',
+        'card-hover':    '0 0 30px -5px rgba(255,84,0,0.4), 0 0 15px -3px rgba(136,36,255,0.3)',
       },
     },
   },

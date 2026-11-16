@@ -1,52 +1,40 @@
-import React, { useEffect, useRef, Suspense } from 'react'
+import React, { useEffect, useRef, Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { gsap } from 'gsap'
-import { ArrowDown, ArrowRight } from 'lucide-react'
+import { ArrowUpRight, ChevronDown } from 'lucide-react'
 import { HeroScene } from '../three/HeroScene'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
 
-// WebGL fallback
+// WebGL Fallback Artwork
 const HeroFallback: React.FC = () => (
   <div className="absolute inset-0 flex items-center justify-center">
     <div className="relative w-full h-full overflow-hidden">
-      {/* Static SVG thread art */}
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 600" fill="none" preserveAspectRatio="xMidYMid slice">
         <defs>
           <radialGradient id="og" cx="40%" cy="50%">
-            <stop offset="0%" stopColor="#FB5607" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#FB5607" stopOpacity="0" />
+            <stop offset="0%" stopColor="#FF5400" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#FF5400" stopOpacity="0" />
           </radialGradient>
           <radialGradient id="pg" cx="75%" cy="30%">
-            <stop offset="0%" stopColor="#8338EC" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#8338EC" stopOpacity="0" />
+            <stop offset="0%" stopColor="#8824FF" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#8824FF" stopOpacity="0" />
           </radialGradient>
         </defs>
         <rect width="800" height="600" fill="url(#og)" />
         <rect width="800" height="600" fill="url(#pg)" />
-        {/* Thread lines */}
-        <path d="M100 300 C200 150, 300 450, 400 300 S 600 150, 700 300" stroke="#FB5607" strokeWidth="1.5" strokeDasharray="8 5" opacity="0.5" />
-        <path d="M100 350 C180 200, 320 480, 420 320 S 580 180, 700 350" stroke="#8338EC" strokeWidth="1" strokeDasharray="5 7" opacity="0.4" />
-        <path d="M100 250 C220 400, 340 100, 460 280 S 620 420, 720 250" stroke="#FB5607" strokeWidth="0.8" strokeDasharray="3 9" opacity="0.3" />
-        {/* Nodes */}
-        <circle cx="400" cy="300" r="8" fill="#FB5607" opacity="0.9" />
-        <circle cx="240" cy="210" r="5" fill="#8338EC" opacity="0.8" />
-        <circle cx="560" cy="390" r="4" fill="#FB5607" opacity="0.7" />
-        <circle cx="160" cy="340" r="3" fill="#8338EC" opacity="0.6" />
-        {/* Wireframe shapes */}
-        <polygon points="400,220 430,280 370,280" stroke="#FB5607" strokeWidth="1" fill="none" opacity="0.4" />
-        <rect x="520" y="250" width="50" height="50" stroke="#8338EC" strokeWidth="1" fill="none" opacity="0.35" transform="rotate(20 545 275)" />
-        <circle cx="240" cy="360" r="30" stroke="#8338EC" strokeWidth="1" fill="none" opacity="0.3" />
+        <path d="M100 300 C200 150, 300 450, 400 300 S 600 150, 700 300" stroke="#FF5400" strokeWidth="1.5" strokeDasharray="8 5" opacity="0.6" />
+        <path d="M100 350 C180 200, 320 480, 420 320 S 580 180, 700 350" stroke="#8824FF" strokeWidth="1.2" strokeDasharray="5 7" opacity="0.5" />
       </svg>
     </div>
   </div>
 )
 
-// WebGL Canvas wrapper with error boundary behaviour
+// WebGL Canvas wrapper for 3D Laptop Model
 const HeroCanvas: React.FC = () => {
   return (
     <Canvas
-      camera={{ position: [0, 0, 5], fov: 60 }}
-      gl={{ antialias: true, alpha: true }}
+      camera={{ position: [0, 0.15, 2.5], fov: 48 }}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
       style={{ background: 'transparent' }}
       dpr={[1, 1.5]}
     >
@@ -58,28 +46,28 @@ const HeroCanvas: React.FC = () => {
 }
 
 export const Hero: React.FC = () => {
-  const reduced        = useReducedMotion()
-  const contentRef     = useRef<HTMLDivElement>(null)
-  const badgeRef       = useRef<HTMLDivElement>(null)
-  const h1Ref          = useRef<HTMLHeadingElement>(null)
-  const subRef         = useRef<HTMLParagraphElement>(null)
-  const ctaRef         = useRef<HTMLDivElement>(null)
-  const cardRef        = useRef<HTMLDivElement>(null)
-  const scrollRef      = useRef<HTMLDivElement>(null)
-  const [webGLFailed, setWebGLFailed] = React.useState(false)
+  const reduced = useReducedMotion()
+  const contentRef = useRef<HTMLDivElement>(null)
+  const tagRef = useRef<HTMLDivElement>(null)
+  const h1Ref = useRef<HTMLHeadingElement>(null)
+  const subRef = useRef<HTMLParagraphElement>(null)
+  const ctaRef = useRef<HTMLDivElement>(null)
+  const metricsRef = useRef<HTMLDivElement>(null)
+  const bottomBarRef = useRef<HTMLDivElement>(null)
+  const [webGLFailed, setWebGLFailed] = useState(false)
 
-  // Entrance animation
+  // Staggered Entrance animation
   useEffect(() => {
     if (reduced) return
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
-      tl.fromTo(badgeRef.current, { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.6 }, 0.3)
-        .fromTo(h1Ref.current,    { opacity: 0, y: 24  }, { opacity: 1, y: 0, duration: 0.8 }, 0.5)
-        .fromTo(subRef.current,   { opacity: 0, y: 16  }, { opacity: 1, y: 0, duration: 0.7 }, 0.75)
-        .fromTo(ctaRef.current,   { opacity: 0, y: 12  }, { opacity: 1, y: 0, duration: 0.6 }, 1.0)
-        .fromTo(cardRef.current,  { opacity: 0, x: 24  }, { opacity: 1, x: 0, duration: 0.8 }, 0.6)
-        .fromTo(scrollRef.current,{ opacity: 0        }, { opacity: 1,       duration: 0.5 }, 1.3)
+      tl.fromTo(tagRef.current, { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.6 }, 0.2)
+        .fromTo(h1Ref.current, { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.85 }, 0.35)
+        .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.75 }, 0.6)
+        .fromTo(ctaRef.current, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.65 }, 0.8)
+        .fromTo(metricsRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 1.0)
+        .fromTo(bottomBarRef.current, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 1.2)
     })
     return () => ctx.revert()
   }, [reduced])
@@ -103,143 +91,146 @@ export const Hero: React.FC = () => {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden pt-20 pb-8"
+      className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden pt-24 sm:pt-28 pb-5 sm:pb-6 bg-[#101519]"
     >
-      {/* Atmospheric background glows */}
-      <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-brand-orange/10 blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[30rem] h-[30rem] rounded-full bg-brand-purple/15 blur-[150px] pointer-events-none" />
-
-      {/* WebGL / Fallback canvas */}
-      <div className="absolute inset-0 opacity-55 pointer-events-none">
-        {webGLFailed ? <HeroFallback /> : <HeroCanvas />}
-      </div>
-
-      {/* Top badge row */}
-      <div ref={badgeRef} className="relative z-10 flex items-center justify-between w-full max-w-7xl mx-auto px-6 lg:px-24 pt-6">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-card/70 backdrop-blur-xl"
-             style={{ border: '1px solid rgba(233,236,239,0.1)' }}>
-          <span className="w-2 h-2 rounded-full bg-brand-orange animate-ping absolute" />
-          <span className="w-2 h-2 rounded-full bg-brand-orange relative" />
-          <span className="font-grotesk text-[11px] uppercase tracking-[0.1em] text-brand-ash/80">
-            Creative Digital Agency&nbsp;•&nbsp;Futuristic Studio
-          </span>
-        </div>
-        <div className="hidden md:flex items-center gap-2">
-          <span className="font-mono text-xs text-muted">// EST. 2024</span>
-        </div>
-      </div>
-
-      {/* Main hero content */}
-      <div ref={contentRef} className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-24 my-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center pt-10 lg:pt-0">
-        {/* Text column */}
-        <div className="lg:col-span-7 flex flex-col items-start space-y-6">
-          <div className="inline-block px-3 py-1 rounded-md bg-surface-card/80 text-brand-purple font-grotesk text-[11px] tracking-widest uppercase">
-            00 // The Kinetic Thread Engine
+      {/* Main Hero Layout: Two-Column Composition (Ref: Image 1) */}
+      <div
+        ref={contentRef}
+        className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-0 my-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-15 items-center"
+      >
+        {/* Left Column (6 cols): Editorial Typography & Conversion CTAs */}
+        <div className="lg:col-span-6 flex flex-col items-start space-y-5 pt-2 lg:pt-0 relative lg:-left-12">
+          {/* Label + Orange Line (Ref: Image 1) */}
+          <div ref={tagRef} className="flex items-center gap-2.5">
+            <span className="section-label text-brand-ash/80">
+              CREATIVE DIGITAL STUDIO
+            </span>
+            <span className="w-8 h-[1.5px] bg-brand-orange rounded-full shadow-[0_0_6px_#FF5400]" />
           </div>
 
-          <h1 ref={h1Ref} className="font-syne text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.02] text-brand-ash">
-            Where Ideas Are{' '}
-            <br className="hidden sm:block" />
+          {/* Headline (Ref: Image 1) */}
+          <h1
+            ref={h1Ref}
+            className="heading-hero text-brand-ash"
+          >
+            Ideas deserve
+            <br />
+            an{' '}
             <span
-              className="text-transparent bg-clip-text"
-              style={{ backgroundImage: 'linear-gradient(90deg, #FB5607 0%, #E9ECEF 50%, #8338EC 100%)' }}
+              className="text-brand-orange neon-text-orange italic font-normal"
+              style={{ fontStyle: 'italic' }}
             >
-              Woven Into Identity.
+              identity.
             </span>
           </h1>
 
-          <p ref={subRef} className="font-geist text-lg text-muted max-w-xl leading-relaxed">
-            We engineer high-conversion digital experiences, tactile brand systems, and living social ecosystems — transforming ambitious visions into cultural gravity.
+          {/* Subtitle (Ref: Image 1) */}
+          <p
+            ref={subRef}
+            className="text-hero-desc text-muted max-w-lg"
+          >
+            Weaving creativity, strategy and technology into digital experiences that make brands unforgettable.
           </p>
 
-          <div ref={ctaRef} className="flex flex-wrap items-center gap-4 pt-2">
+          {/* CTA Buttons (Ref: Image 1) */}
+          <div ref={ctaRef} className="flex flex-wrap items-center gap-3 pt-1">
             <a
               href="#contact"
-              onClick={e => { e.preventDefault(); handleNav('#contact') }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand-orange text-[#16181B]
-                         font-grotesk text-sm font-bold uppercase tracking-widest
-                         shadow-orange-glow hover:shadow-orange-glow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNav('#contact')
+              }}
+              data-cursor="special"
+              className="btn-text inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-orange text-[#0C0E10]
+                         shadow-[0_0_20px_rgba(255,84,0,0.45)] hover:shadow-[0_0_30px_rgba(255,84,0,0.65)]
+                         hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
             >
-              Start a Project <ArrowRight size={16} />
+              Start a Project <ArrowUpRight size={15} />
             </a>
             <a
               href="#our-work"
-              onClick={e => { e.preventDefault(); handleNav('#our-work') }}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-surface-card/60 backdrop-blur-md text-brand-ash
-                         font-grotesk text-sm font-bold uppercase tracking-widest
-                         border border-brand-ash/10 hover:bg-surface-high/80 transition-all duration-200"
+              onClick={(e) => {
+                e.preventDefault()
+                handleNav('#our-work')
+              }}
+              className="btn-text inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#181B1F]/70 backdrop-blur-md text-brand-ash
+                         border border-brand-ash/15 hover:border-brand-purple/50 hover:bg-surface-high/80 transition-all duration-300"
             >
-              Explore Showcase
+              Explore Our Work
             </a>
+          </div>
+
+          {/* Bottom Metrics Strip (Ref: Image 1) */}
+          <div ref={metricsRef} className="flex items-center gap-7 sm:gap-10 pt-4 border-t border-brand-ash/10 w-full max-w-md">
+            <div>
+              <div className="font-grotesk text-2xl sm:text-3xl font-semibold text-brand-orange tracking-tight">
+                5+
+              </div>
+              <div className="font-manrope text-xs text-muted pt-0.5 font-normal">
+                Core Services
+              </div>
+            </div>
+            <div className="w-px h-7 bg-brand-ash/10" />
+            <div>
+              <div className="font-grotesk text-2xl sm:text-3xl font-semibold text-brand-ash tracking-tight">
+                50+
+              </div>
+              <div className="font-manrope text-xs text-muted pt-0.5 font-normal">
+                Projects Delivered
+              </div>
+            </div>
+            <div className="w-px h-7 bg-brand-ash/10" />
+            <div>
+              <div className="font-grotesk text-2xl sm:text-3xl font-semibold text-brand-purple tracking-tight">
+                100%
+              </div>
+              <div className="font-manrope text-xs text-muted pt-0.5 font-normal">
+                Client Focused
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right info card */}
-        <div ref={cardRef} className="lg:col-span-5 flex flex-col gap-4">
-          <div
-            className="p-6 rounded-2xl bg-surface-card/75 backdrop-blur-2xl shadow-2xl relative overflow-hidden group"
-            style={{ border: '1px solid rgba(233,236,239,0.08)' }}
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 rounded-full blur-2xl group-hover:bg-brand-orange/18 transition-all duration-500" />
-
-            <div className="flex items-center justify-between pb-3">
-              <span className="font-grotesk text-[11px] uppercase tracking-[0.12em] text-brand-orange font-bold">Active System Core</span>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-orange" />
-              </span>
-            </div>
-
-            <div className="font-syne text-2xl font-bold text-brand-ash">100% Operational</div>
-            <p className="font-geist text-sm text-muted pt-1.5">
-              Synthesizing brand architecture, WebGL experiences, and audience acquisition pipelines.
-            </p>
-
-            <div className="grid grid-cols-2 gap-3 pt-4">
-              <div className="p-3 rounded-xl bg-surface-high/60">
-                <span className="font-grotesk text-[10px] uppercase tracking-wider text-muted block">Delivery Speed</span>
-                <span className="font-syne text-lg font-bold text-brand-ash">On Time</span>
-              </div>
-              <div className="p-3 rounded-xl bg-surface-high/60">
-                <span className="font-grotesk text-[10px] uppercase tracking-wider text-muted block">Brand Impact</span>
-                <span className="font-syne text-lg font-bold text-brand-purple">Maximum</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between px-5 py-3 rounded-xl bg-surface-base/80 backdrop-blur-md"
-               style={{ border: '1px solid rgba(233,236,239,0.06)' }}>
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-brand-orange/15 flex items-center justify-center">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M2 8 C4 4, 6 12, 8 8 S 12 4, 14 8" stroke="#FB5607" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <span className="font-grotesk text-xs uppercase tracking-widest text-brand-ash">Multi-Disciplinary Studio</span>
-            </div>
-            <span className="font-grotesk text-[11px] text-brand-purple font-bold">EST. 2024</span>
+        {/* Right Column (6 cols): 3D Laptop on Volcanic Rock Platform (Ref: Image 1) */}
+        <div className="lg:col-span-6 relative w-full h-[414px] sm:h-[483px] lg:h-[575px] flex items-center justify-center">
+          <div className="absolute inset-y-0 -left-[15%] -right-[15%]">
+            {webGLFailed ? <HeroFallback /> : <HeroCanvas />}
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div ref={scrollRef} className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-24 flex items-center justify-between pt-6">
-        <div className="flex items-center gap-3">
-          <span className="font-grotesk text-[11px] uppercase tracking-[0.12em] text-muted">Scroll to Unravel</span>
-          <div className="w-12 h-px bg-muted/30" />
-        </div>
+      {/* Bottom Status & Scroll Indicator Bar (Ref: Image 1) */}
+      <div
+        ref={bottomBarRef}
+        className="relative z-20 w-full max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between pt-4 border-t border-brand-ash/[0.06]"
+      >
+        {/* Empty left spacer */}
+        <div className="hidden sm:block w-36" />
+
+        {/* Center Scroll Indicator (Ref: Image 1) */}
         <button
           onClick={() => handleNav('#about')}
-          className="w-10 h-10 rounded-full bg-surface-card flex items-center justify-center text-brand-orange hover:bg-brand-orange hover:text-[#16181B] transition-colors"
-          aria-label="Scroll to about section"
+          className="flex flex-col items-center gap-1 group cursor-pointer"
+          aria-label="Scroll to explore philosophy"
         >
-          <ArrowDown size={18} className="animate-bounce" />
+          {/* Vertical mouse pill with dot */}
+          <div className="w-3.5 h-6 rounded-full border border-brand-ash/40 flex items-start justify-center p-0.5 group-hover:border-brand-orange transition-colors">
+            <span className="w-0.5 h-1.5 bg-brand-orange rounded-full animate-bounce" />
+          </div>
+          <span className="font-manrope text-[11px] text-muted tracking-wider group-hover:text-brand-ash transition-colors">
+            Scroll to Explore
+          </span>
+          <ChevronDown size={12} className="text-brand-orange animate-pulse" />
         </button>
-        <div className="hidden sm:block font-grotesk text-[11px] uppercase text-muted tracking-widest">
-          Paradigm // Digital Fabric
+
+        {/* Right Brand Declaration (Ref: Image 1) */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-px bg-brand-ash/20" />
+          <span className="font-grotesk text-[10px] tracking-[0.14em] text-muted uppercase">
+            WHERE IDEAS ARE WOVEN INTO IDENTITY.
+          </span>
         </div>
       </div>
     </section>
   )
 }
-

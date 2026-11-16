@@ -205,7 +205,7 @@ Place images in `public/assets/` and reference them as `/assets/project-name.jpg
 4. **Phone number**: Placeholder — update in `contact.ts`
 5. **WhatsApp number**: Placeholder — update in `contact.ts`
 6. **Email address**: Placeholder — update in `contact.ts`
-7. **Navbar logo image**: Uses SVG wordmark — replace with actual logo file if available
+7. **Navbar & Footer logo**: Uses `logo.png` from `/public/logo.png`
 
 ---
 

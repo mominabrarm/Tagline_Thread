@@ -1,122 +1,142 @@
-import React, { useRef, useMemo } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
-import { ThreadObject } from './ThreadObject'
-import * as THREE from 'three'
+import React from 'react'
+import { Html, Environment } from '@react-three/drei'
+import { LaptopModel } from './LaptopModel'
 
-// Animated particle field
-const ParticleField: React.FC = () => {
-  const meshRef = useRef<THREE.Points>(null)
-  const count   = 120
+// ─── Floating Info Box (Matched exactly to uploaded design) ──────────────────
+interface FloatingHeroBoxProps {
+  position: [number, number, number]
+  dotColor: string
+  title: string
+  line1: string
+  line2: string
+  delay?: number
+  distanceFactor?: number
+}
 
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      arr[i * 3]     = (Math.random() - 0.5) * 10
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 6
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 4 - 2
-    }
-    return arr
-  }, [])
-
-  useFrame(({ clock }) => {
-    if (!meshRef.current) return
-    meshRef.current.rotation.y = clock.getElapsedTime() * 0.03
-  })
-
+const FloatingHeroBox: React.FC<FloatingHeroBoxProps> = ({
+  position,
+  dotColor,
+  title,
+  line1,
+  line2,
+  delay = 0,
+  distanceFactor = 1.92,
+}) => {
   return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial size={0.025} color="#E9ECEF" transparent opacity={0.4} sizeAttenuation />
-    </points>
+    <Html position={position} distanceFactor={distanceFactor} style={{ pointerEvents: 'none' }} center>
+      <div
+        className="select-none transition-all duration-300"
+        style={{
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(20, 25, 32, 0.58) 50%, rgba(12, 15, 19, 0.72) 100%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.14)',
+          borderRadius: '14px',
+          padding: '12px 15px',
+          width: 'max-content',
+          minWidth: '186px',
+          boxShadow: '0 12px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.20), inset 0 0 16px rgba(255, 255, 255, 0.02)',
+          animation: `heroFloatBox 5s ease-in-out infinite ${delay}s`,
+        }}
+      >
+        <div className="flex items-center justify-between gap-[2.625rem]">
+          {/* Left: Dot + (Title & Subtitle column) */}
+          <div className="flex items-start gap-2.5 min-w-0">
+            <span
+              className="w-[8px] h-[8px] rounded-full inline-block flex-shrink-0 mt-[2px]"
+              style={{
+                background: dotColor,
+                boxShadow: `0 0 8px ${dotColor}88`,
+              }}
+            />
+            <div className="min-w-0">
+              <div className="font-manrope text-[11.5px] font-normal text-[#EAECEE] tracking-tight leading-none whitespace-nowrap">
+                {title}
+              </div>
+              <div className="font-manrope text-[9.5px] text-[#8E959E] pt-2 leading-[1.35] whitespace-nowrap font-light">
+                {line1}
+                <br />
+                {line2}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Thin Silver Arrow */}
+          <div className="flex-shrink-0 flex items-center justify-center">
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#9DA1A6"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M13 5l6 7-6 7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </Html>
   )
 }
 
-// Camera drift on mouse
-const CameraDrift: React.FC = () => {
-  const { camera } = useThree()
-
-  useFrame(({ clock, mouse }) => {
-    const t = clock.getElapsedTime()
-    camera.position.x += (mouse.x * 0.4 - camera.position.x) * 0.03
-    camera.position.y += (mouse.y * 0.2 - camera.position.y) * 0.03
-    camera.position.z  = 5 + Math.sin(t * 0.2) * 0.15
-    camera.lookAt(0, 0, 0)
-  })
-
-  return null
-}
-
-// Animated thread line using a primitive Line object
-const AnimatedLine: React.FC<{
-  points: THREE.Vector3[]
-  color: string
-  opacity?: number
-}> = ({ points, color, opacity = 0.5 }) => {
-  const lineRef = useRef<THREE.Line | null>(null)
-
-  const { geometry, material } = useMemo(() => {
-    const curve = new THREE.CatmullRomCurve3(points)
-    const pts   = curve.getPoints(50)
-    const geo   = new THREE.BufferGeometry().setFromPoints(pts)
-    const mat   = new THREE.LineBasicMaterial({ color, transparent: true, opacity })
-    return { geometry: geo, material: mat }
-  }, [points, color, opacity])
-
-  const lineObj = useMemo(() => new THREE.Line(geometry, material), [geometry, material])
-
-  useFrame(({ clock }) => {
-    if (material) {
-      material.opacity = opacity * (0.4 + 0.6 * Math.abs(Math.sin(clock.getElapsedTime() * 1.2)))
-    }
-  })
-
-  return <primitive object={lineObj} ref={lineRef} />
-}
-
+// ─── Hero 3D Scene: 3D Laptop with 1.png Floating Boxes ─────────────────────
 export const HeroScene: React.FC = () => {
-  const lineConfigs = useMemo(() => [
-    {
-      points: [new THREE.Vector3(0,0,0), new THREE.Vector3(0.9,0.3,-0.25), new THREE.Vector3(1.8,0.6,-0.5)],
-      color: '#FB5607', opacity: 0.5,
-    },
-    {
-      points: [new THREE.Vector3(0,0,0), new THREE.Vector3(-0.8,-0.2,0.15), new THREE.Vector3(-1.6,-0.4,0.3)],
-      color: '#8338EC', opacity: 0.4,
-    },
-    {
-      points: [new THREE.Vector3(0,0,0), new THREE.Vector3(-0.4,0.75,-0.1), new THREE.Vector3(-0.8,1.5,-0.2)],
-      color: '#FB5607', opacity: 0.3,
-    },
-    {
-      points: [new THREE.Vector3(0,0,0), new THREE.Vector3(0.3,-0.7,0.2), new THREE.Vector3(0.6,-1.4,0.4)],
-      color: '#8338EC', opacity: 0.35,
-    },
-  ], [])
-
   return (
     <>
-      <CameraDrift />
-      <ParticleField />
+      {/* Cinematic Studio Lighting tuned for metallic laptop surfaces */}
+      <ambientLight intensity={0.65} />
+      {/* Key Orange Rim Light */}
+      <directionalLight position={[3, 3, 2]} intensity={3.8} color="#FF5400" />
+      {/* Accent Purple Rim Light */}
+      <directionalLight position={[-3, 2, 2]} intensity={3.2} color="#8824FF" />
+      {/* Top Front Studio Key Light (illuminates keyboard deck & palm rest) */}
+      <directionalLight position={[0, 2.5, 3]} intensity={2.6} color="#FFFFFF" />
+      {/* Metallic Chassis Edge & Palm Rest Fill Lights */}
+      <pointLight position={[0.6, -0.15, 1.6]} intensity={1.8} color="#FF5400" distance={5} />
+      <pointLight position={[-0.8, -0.25, 1.4]} intensity={1.4} color="#8824FF" distance={5} />
 
-      {/* Lighting */}
-      <ambientLight intensity={0.15} />
-      <pointLight position={[3,  3,  3]} intensity={1.2} color="#FB5607" />
-      <pointLight position={[-3,-2,  2]} intensity={0.8} color="#8338EC" />
-      <pointLight position={[0,  4, -2]} intensity={0.4} color="#E9ECEF" />
+      {/* Prominent 3D Laptop with Tagline-Thread Logo on Screen (scaled down 20% to 5.24) */}
+      <LaptopModel
+        position={[0.04, -0.42, 0]}
+        scale={5.24}
+      />
 
-      {/* Geometric objects */}
-      <ThreadObject position={[0,     0,    0]}   color="#FB5607" shape="ico"        speed={0.6} scale={1.1} />
-      <ThreadObject position={[1.8,   0.6, -0.5]} color="#8338EC" shape="torus"      speed={0.9} scale={0.85} />
-      <ThreadObject position={[-1.6, -0.4,  0.3]} color="#FB5607" shape="octahedron" speed={0.7} scale={0.75} />
-      <ThreadObject position={[0.6,  -1.4,  0.4]} color="#8338EC" shape="sphere"     speed={1.1} scale={0.6} />
-      <ThreadObject position={[-0.8,  1.5, -0.2]} color="#E9ECEF" shape="octahedron" speed={0.5} scale={0.5} />
+      {/* ─── 3 Floating Glass Boxes Positioned Exactly As Per Reference Image (scaled down 20%) ─── */}
+      {/* 1. Top Left Box: overlapping the top-left screen bezel and corner */}
+      <FloatingHeroBox
+        position={[-0.632, 0.558, 0.28]}
+        dotColor="#FF5504"
+        title="Brand Strategy"
+        line1="Strategy that builds"
+        line2="lasting brands."
+        delay={0}
+      />
 
-      {/* Animated thread lines */}
-      {lineConfigs.map((cfg, i) => (
-        <AnimatedLine key={i} points={cfg.points} color={cfg.color} opacity={cfg.opacity} />
-      ))}
+      {/* 2. Middle Right Box: hovering along the middle-right screen bezel edge */}
+      <FloatingHeroBox
+        position={[0.744, 0.196, 0.24]}
+        dotColor="#8824FF"
+        title="Creative Design"
+        line1="Designs that speak"
+        line2="and inspire."
+        delay={1.2}
+      />
+
+      {/* 3. Lower Right Box: overlapping the bottom-right screen corner & keyboard deck */}
+      <FloatingHeroBox
+        position={[0.664, -0.372, 0.304]}
+        dotColor="#FF5504"
+        title="Digital Growth"
+        line1="More reach."
+        line2="More opportunities."
+        delay={2.4}
+      />
+
+      {/* Cinematic Studio Environment reflections for metallic laptop chassis and bevels */}
+      <Environment preset="city" />
     </>
   )
 }

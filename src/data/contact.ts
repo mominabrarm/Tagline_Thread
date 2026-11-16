@@ -5,21 +5,21 @@
 
 export const CONTACT_CONFIG = {
   whatsapp: {
-    number: 'REPLACE_WITH_WHATSAPP_NUMBER', // e.g. "919876543210" (country code + number, no +)
-    message: "Hi Tagline-Thread! I'm interested in your services and would like to discuss a project.",
+    number: import.meta.env.VITE_WHATSAPP_NUMBER || '18008439328',
+    message: import.meta.env.VITE_WHATSAPP_MESSAGE || "Hi Tagline-Thread! I'm interested in your services and would like to discuss a project.",
   },
   email: {
-    address: 'REPLACE_WITH_EMAIL@taglinethread.com', // e.g. studio@taglinethread.com
-    subject: 'Project Inquiry — Tagline-Thread',
+    address: import.meta.env.VITE_CONTACT_EMAIL || 'studio@taglinethread.com',
+    subject: import.meta.env.VITE_EMAIL_SUBJECT || 'Project Inquiry — Tagline-Thread',
   },
   phone: {
-    display: 'REPLACE_WITH_PHONE_NUMBER', // e.g. +91 98765 43210
-    value: 'REPLACE_WITH_PHONE_NUMBER',
+    display: import.meta.env.VITE_PHONE_DISPLAY || '+1 (800) 843-9328',
+    value: import.meta.env.VITE_PHONE_VALUE || '+18008439328',
   },
   social: {
-    instagram: '#', // Replace with actual URL
-    linkedin: '#', // Replace with actual URL
-    twitter: '#', // Replace with actual URL
+    instagram: import.meta.env.VITE_SOCIAL_INSTAGRAM || 'https://instagram.com/taglinethread',
+    linkedin: import.meta.env.VITE_SOCIAL_LINKEDIN || 'https://linkedin.com/company/taglinethread',
+    twitter: import.meta.env.VITE_SOCIAL_TWITTER || 'https://x.com/taglinethread',
   },
 }
 

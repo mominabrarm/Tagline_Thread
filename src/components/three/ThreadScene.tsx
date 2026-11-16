@@ -18,15 +18,15 @@ const BrandingStage: React.FC<{ active: boolean }> = ({ active }) => {
     <group ref={groupRef} visible={active}>
       <mesh>
         <icosahedronGeometry args={[0.8, 1]} />
-        <meshStandardMaterial color="#FB5607" wireframe emissive="#FB5607" emissiveIntensity={0.2} />
+        <meshStandardMaterial color="#FF5400" wireframe emissive="#FF5400" emissiveIntensity={0.2} />
       </mesh>
       <mesh rotation={[Math.PI / 4, 0, 0]}>
         <torusGeometry args={[1.2, 0.03, 8, 64]} />
-        <meshStandardMaterial color="#8338EC" transparent opacity={0.7} emissive="#8338EC" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#8824FF" transparent opacity={0.7} emissive="#8824FF" emissiveIntensity={0.3} />
       </mesh>
       <mesh rotation={[0, Math.PI / 4, Math.PI / 4]}>
         <torusGeometry args={[1.2, 0.03, 8, 64]} />
-        <meshStandardMaterial color="#FB5607" transparent opacity={0.5} emissive="#FB5607" emissiveIntensity={0.15} />
+        <meshStandardMaterial color="#FF5400" transparent opacity={0.5} emissive="#FF5400" emissiveIntensity={0.15} />
       </mesh>
     </group>
   )
@@ -45,22 +45,22 @@ const WebsiteStage: React.FC<{ active: boolean }> = ({ active }) => {
       {/* Screen body */}
       <mesh position={[0, 0.1, 0]}>
         <boxGeometry args={[2.2, 1.4, 0.06]} />
-        <meshStandardMaterial color="#2A2E33" metalness={0.8} roughness={0.2} />
+        <meshStandardMaterial color="#181B1F" metalness={0.8} roughness={0.2} />
       </mesh>
       {/* Screen face */}
       <mesh position={[0, 0.1, 0.035]}>
         <planeGeometry args={[2.0, 1.2]} />
-        <meshStandardMaterial color="#16181B" emissive="#FB5607" emissiveIntensity={0.08} />
+        <meshStandardMaterial color="#0C0E10" emissive="#FF5400" emissiveIntensity={0.08} />
       </mesh>
       {/* Stand */}
       <mesh position={[0, -0.9, 0]}>
         <cylinderGeometry args={[0.08, 0.14, 0.9, 12]} />
-        <meshStandardMaterial color="#363A3E" metalness={0.9} roughness={0.1} />
+        <meshStandardMaterial color="#23272D" metalness={0.9} roughness={0.1} />
       </mesh>
       {/* Orange thread accent */}
       <mesh position={[0, 0.1, 0.04]}>
         <torusGeometry args={[1.1, 0.02, 6, 60]} />
-        <meshStandardMaterial color="#FB5607" emissive="#FB5607" emissiveIntensity={0.6} transparent opacity={0.7} />
+        <meshStandardMaterial color="#FF5400" emissive="#FF5400" emissiveIntensity={0.6} transparent opacity={0.7} />
       </mesh>
     </group>
   )
@@ -79,21 +79,21 @@ const SocialMgmtStage: React.FC<{ active: boolean }> = ({ active }) => {
       {/* Phone body */}
       <mesh>
         <boxGeometry args={[0.7, 1.4, 0.08]} />
-        <meshStandardMaterial color="#2A2E33" metalness={0.8} roughness={0.15} />
+        <meshStandardMaterial color="#181B1F" metalness={0.8} roughness={0.15} />
       </mesh>
       {/* Screen */}
       <mesh position={[0, 0, 0.045]}>
         <planeGeometry args={[0.6, 1.2]} />
-        <meshStandardMaterial color="#16181B" emissive="#8338EC" emissiveIntensity={0.1} />
+        <meshStandardMaterial color="#0C0E10" emissive="#8824FF" emissiveIntensity={0.1} />
       </mesh>
       {/* Floating content cards */}
       {[-0.6, 0, 0.6].map((x, i) => (
         <mesh key={i} position={[x * 1.4, 0.3 - i * 0.4, 0.3]}>
           <boxGeometry args={[0.6, 0.25, 0.04]} />
           <meshStandardMaterial
-            color={i % 2 === 0 ? '#8338EC' : '#FB5607'}
+            color={i % 2 === 0 ? '#8824FF' : '#FF5400'}
             transparent opacity={0.7}
-            emissive={i % 2 === 0 ? '#8338EC' : '#FB5607'}
+            emissive={i % 2 === 0 ? '#8824FF' : '#FF5400'}
             emissiveIntensity={0.3}
           />
         </mesh>
@@ -125,7 +125,7 @@ const MarketingStage: React.FC<{ active: boolean }> = ({ active }) => {
       {/* Center */}
       <mesh>
         <sphereGeometry args={[0.25, 16, 12]} />
-        <meshStandardMaterial color="#FB5607" emissive="#FB5607" emissiveIntensity={0.5} />
+        <meshStandardMaterial color="#FF5400" emissive="#FF5400" emissiveIntensity={0.5} />
       </mesh>
       {/* Outer nodes + lines to center */}
       {nodePositions.map((pos, i) => (
@@ -133,8 +133,8 @@ const MarketingStage: React.FC<{ active: boolean }> = ({ active }) => {
           <mesh position={[pos.x, pos.y, pos.z]}>
             <sphereGeometry args={[0.1, 10, 8]} />
             <meshStandardMaterial
-              color={i % 2 === 0 ? '#8338EC' : '#FB5607'}
-              emissive={i % 2 === 0 ? '#8338EC' : '#FB5607'}
+              color={i % 2 === 0 ? '#8824FF' : '#FF5400'}
+              emissive={i % 2 === 0 ? '#8824FF' : '#FF5400'}
               emissiveIntensity={0.4}
             />
           </mesh>
@@ -155,19 +155,19 @@ const UnifiedStage: React.FC<{ active: boolean }> = ({ active }) => {
     <group ref={groupRef} visible={active}>
       <mesh position={[-1.0, 0.6, 0]}>
         <icosahedronGeometry args={[0.35, 0]} />
-        <meshStandardMaterial color="#FB5607" wireframe emissive="#FB5607" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#FF5400" wireframe emissive="#FF5400" emissiveIntensity={0.3} />
       </mesh>
       <mesh position={[1.0, 0.6, 0]}>
         <boxGeometry args={[0.6, 0.4, 0.05]} />
-        <meshStandardMaterial color="#8338EC" emissive="#8338EC" emissiveIntensity={0.2} />
+        <meshStandardMaterial color="#8824FF" emissive="#8824FF" emissiveIntensity={0.2} />
       </mesh>
       <mesh position={[-1.0, -0.6, 0]}>
         <boxGeometry args={[0.3, 0.6, 0.05]} />
-        <meshStandardMaterial color="#8338EC" emissive="#8338EC" emissiveIntensity={0.2} />
+        <meshStandardMaterial color="#8824FF" emissive="#8824FF" emissiveIntensity={0.2} />
       </mesh>
       <mesh position={[1.0, -0.6, 0]}>
         <sphereGeometry args={[0.3, 12, 8]} />
-        <meshStandardMaterial color="#FB5607" emissive="#FB5607" emissiveIntensity={0.3} />
+        <meshStandardMaterial color="#FF5400" emissive="#FF5400" emissiveIntensity={0.3} />
       </mesh>
       {/* Central connector */}
       <mesh>
@@ -177,7 +177,7 @@ const UnifiedStage: React.FC<{ active: boolean }> = ({ active }) => {
       {/* Orbital ring */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.1, 0.02, 6, 80]} />
-        <meshStandardMaterial color="#FB5607" transparent opacity={0.5} emissive="#FB5607" emissiveIntensity={0.4} />
+        <meshStandardMaterial color="#FF5400" transparent opacity={0.5} emissive="#FF5400" emissiveIntensity={0.4} />
       </mesh>
     </group>
   )
@@ -187,8 +187,8 @@ export const ThreadScene: React.FC<ThreadSceneProps> = ({ stage }) => {
   return (
     <>
       <ambientLight intensity={0.2} />
-      <pointLight position={[3, 2, 3]} intensity={1.0} color="#FB5607" />
-      <pointLight position={[-3, -1, 2]} intensity={0.7} color="#8338EC" />
+      <pointLight position={[3, 2, 3]} intensity={1.0} color="#FF5400" />
+      <pointLight position={[-3, -1, 2]} intensity={0.7} color="#8824FF" />
 
       <BrandingStage  active={stage === 0} />
       <WebsiteStage   active={stage === 1} />

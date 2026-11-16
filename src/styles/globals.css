@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --color-bg:       #212529;
+    --color-bg:       #101519;
     --color-ash:      #E9ECEF;
-    --color-orange:   #FB5607;
-    --color-purple:   #8338EC;
-    --color-surface:  #16181B;
-    --color-card:     #2A2E33;
-    --color-high:     #363A3E;
+    --color-orange:   #FF5400;
+    --color-purple:   #8824FF;
+    --color-surface:  #0C0E10;
+    --color-card:     #181B1F;
+    --color-high:     #23272D;
     --color-muted:    #9BA3AF;
   }
 
@@ -21,47 +21,238 @@
   html::-webkit-scrollbar { display: none; }
 
   body {
-    @apply bg-brand-bg text-brand-ash font-geist antialiased;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--color-ash);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
+    background-color: #101519;
   }
 
   * { box-sizing: border-box; }
 
   ::selection {
-    background: rgba(251, 86, 7, 0.35);
+    background: rgba(255, 84, 0, 0.4);
     color: #E9ECEF;
   }
 }
 
 @layer components {
+  /* ── Complete Website Typography Implementation ─────────────────────── */
+  /* 1. Playfair Display: Editorial Headings */
+  .heading-hero {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.8rem, 10vw, 4rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+  @media (min-width: 1024px) {
+    .heading-hero {
+      font-size: clamp(3.5rem, 5.75vw, 6rem);
+    }
+  }
+
+  .heading-section {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.8rem, 4.5vw, 4.75rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .heading-section-secondary {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 3vw, 3.25rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  /* 2. Manrope: Body, UI, Descriptions, Buttons & Cards */
+  .text-hero-desc {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.05rem, 1.2vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .text-body {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.95rem, 1.05vw, 1.125rem);
+    font-weight: 400;
+    line-height: 1.65;
+  }
+
+  .nav-link {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.85rem, 0.95vw, 1rem);
+    font-weight: 500;
+  }
+
+  .card-heading {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.1rem, 1.5vw, 1.55rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .card-desc {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.85rem, 0.95vw, 1rem);
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .btn-text {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.875rem, 0.95vw, 1rem);
+    font-weight: 600;
+  }
+
+  /* 3. Space Grotesk: Section Labels & Technical Metadata */
   .section-label {
-    @apply inline-flex items-center gap-2 font-grotesk text-xs font-semibold uppercase tracking-[0.1em];
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(0.7rem, 0.8vw, 0.875rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Footer Specific Clamps */
+  .footer-brand {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 2.5vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .footer-col-heading {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(1.15rem, 1.4vw, 1.5rem);
+    font-weight: 700;
+  }
+
+  .footer-link {
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.9rem, 1vw, 1.0625rem);
+    font-weight: 400;
   }
 
   .section-title {
-    @apply font-syne text-4xl md:text-5xl font-bold tracking-tight leading-tight;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.8rem, 4.5vw, 4.75rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
   }
 
   .section-body {
-    @apply font-geist text-lg text-muted leading-relaxed;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.95rem, 1.05vw, 1.125rem);
+    font-weight: 400;
+    line-height: 1.65;
+    color: var(--color-muted);
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full
-           bg-brand-orange text-[#16181B] font-grotesk text-sm font-bold uppercase tracking-widest
+    @apply inline-flex items-center gap-2 px-6 py-2.5 rounded-full
+           bg-brand-orange text-[#0C0E10] font-semibold uppercase tracking-wider
            shadow-orange-glow hover:shadow-orange-glow-lg hover:scale-[1.02]
            active:scale-[0.98] transition-all duration-300 cursor-pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.875rem, 0.95vw, 1rem);
   }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 rounded-full
+    @apply inline-flex items-center gap-2 px-6 py-2.5 rounded-full
            bg-surface-card/60 backdrop-blur-md text-brand-ash
-           font-grotesk text-sm font-bold uppercase tracking-widest
+           font-semibold uppercase tracking-wider
            hover:bg-surface-high/80 transition-all duration-200 cursor-pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(0.875rem, 0.95vw, 1rem);
   }
 
   .glass-card {
-    @apply bg-surface-card/70 backdrop-blur-xl border border-brand-ash/8 rounded-2xl;
+    @apply bg-surface-card/70 backdrop-blur-xl border border-brand-ash/8 rounded-xl;
+  }
+
+  /* ── Glassmorphism tiers ─────────────────────────── */
+  .glass-sm {
+    background: rgba(24, 27, 31, 0.50);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(233, 236, 239, 0.08);
+  }
+
+  .glass-md {
+    background: rgba(24, 27, 31, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(233, 236, 239, 0.10);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .glass-lg {
+    background: rgba(12, 14, 16, 0.75);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(233, 236, 239, 0.12);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07);
+  }
+
+  .glass-orange {
+    background: rgba(17, 19, 22, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 84, 0, 0.28);
+    box-shadow:
+      0 0 48px -12px rgba(255, 84, 0, 0.25),
+      0 8px 32px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .glass-purple {
+    background: rgba(17, 19, 22, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(136, 36, 255, 0.28);
+    box-shadow:
+      0 0 48px -12px rgba(136, 36, 255, 0.25),
+      0 8px 32px rgba(0,0,0,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .glass-elevated {
+    background: linear-gradient(
+      135deg,
+      rgba(35, 39, 45, 0.72) 0%,
+      rgba(24, 27, 31, 0.55) 100%
+    );
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(233, 236, 239, 0.11);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.45),
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 -1px 0 rgba(0,0,0,0.3) inset;
+  }
+
+  /* Inner shimmer line at the top of glass panels */
+  .glass-shine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    border-radius: inherit;
+    pointer-events: none;
   }
 
   .hairline {
@@ -69,15 +260,16 @@
   }
 
   .thread-glow {
-    box-shadow: 0 0 30px -5px rgba(251,86,7,0.35), 0 0 15px -3px rgba(131,56,236,0.25);
+    box-shadow: 0 0 30px -5px rgba(255,84,0,0.35), 0 0 15px -3px rgba(136,36,255,0.25);
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl bg-surface-base text-brand-ash
-           placeholder:text-muted/50 font-geist text-base
+    @apply w-full px-3.5 py-2.5 rounded-lg bg-surface-base text-brand-ash
+           placeholder:text-muted/50 text-sm
            border border-brand-ash/[0.08] focus:border-brand-orange/60
            focus:outline-none focus:ring-1 focus:ring-brand-orange/40
            transition-all duration-200;
+    font-family: 'Manrope', sans-serif;
   }
 }
 
@@ -96,8 +288,18 @@ body::before {
 
 /* Smooth focus rings */
 *:focus-visible {
-  outline: 2px solid rgba(251,86,7,0.7);
+  outline: 2px solid rgba(255,84,0,0.7);
   outline-offset: 3px;
+}
+
+/* Floating Hero Boxes Animation (from 1.png) */
+@keyframes heroFloatBox {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
 }
 
 /* Reduced motion */

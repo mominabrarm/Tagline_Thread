@@ -1,38 +1,57 @@
 import React from 'react'
-import { Navbar }      from './components/layout/Navbar'
-import { Footer }      from './components/layout/Footer'
-import { Hero }        from './components/sections/Hero'
-import { About }       from './components/sections/About'
-import { ThreadEngine }from './components/sections/ThreadEngine'
-import { Services }    from './components/sections/Services'
-import { Portfolio }   from './components/sections/Portfolio'
-import { HowWeWork }   from './components/sections/HowWeWork'
-import { Contact }     from './components/sections/Contact'
+import { Navbar } from './components/layout/Navbar'
+import { Footer } from './components/layout/Footer'
+import { Hero } from './components/sections/Hero'
+import { About } from './components/sections/About'
+import { ThreadEngine } from './components/sections/ThreadEngine'
+import { Services } from './components/sections/Services'
+import { Portfolio } from './components/sections/Portfolio'
+import { HowWeWork } from './components/sections/HowWeWork'
+import { Contact } from './components/sections/Contact'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
+import { TTOrbitCursor } from './components/ui/TTOrbitCursor'
 
 const App: React.FC = () => {
   return (
     <>
+      {/* Custom TT Orbit Cursor */}
+      <TTOrbitCursor />
+
+      {/* Floating Navigation Dock */}
       <Navbar />
 
       <main id="main-content">
         {/* Skip-to-main for accessibility */}
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand-orange focus:text-[#16181B] focus:font-bold"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand-orange focus:text-[#0C0E10] focus:font-bold"
         >
           Skip to main content
         </a>
 
+        {/* 01 // HERO */}
         <Hero />
+
+        {/* 02 // OUR PHILOSOPHY */}
         <About />
+
+        {/* 03 // OUR APPROACH */}
         <ThreadEngine />
+
+        {/* 04 // OUR SERVICES */}
         <Services />
+
+        {/* 05 // OUR WORK */}
         <Portfolio />
+
+        {/* 06 // WHY TAGLINE-THREAD */}
         <HowWeWork />
+
+        {/* CONTACT & INQUIRY */}
         <Contact />
       </main>
 
+      {/* 07 // FOOTER */}
       <Footer />
 
       {/* Floating WhatsApp CTA */}
@@ -42,4 +61,3 @@ const App: React.FC = () => {
 }
 
 export default App
-
