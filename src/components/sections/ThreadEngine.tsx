@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
+import { NeutronStarTransfer } from '../ui/NeutronStarTransfer'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -26,8 +27,6 @@ interface StepData {
   desc: string
   accent: 'orange' | 'purple'
   icon: LucideIcon
-  elevate: number // pixel offset for ascending fan
-  rotateZ: number
 }
 
 const STEPS: StepData[] = [
@@ -37,8 +36,6 @@ const STEPS: StepData[] = [
     desc: 'Understand your goals, audience and core requirements.',
     accent: 'orange',
     icon: Target,
-    elevate: 40,
-    rotateZ: -3,
   },
   {
     num: '02',
@@ -46,8 +43,6 @@ const STEPS: StepData[] = [
     desc: 'Shape the right strategy, creative direction and execution roadmap.',
     accent: 'purple',
     icon: Layers,
-    elevate: 20,
-    rotateZ: -1.5,
   },
   {
     num: '03',
@@ -55,8 +50,6 @@ const STEPS: StepData[] = [
     desc: 'Design, develop and produce the required assets and experiences.',
     accent: 'orange',
     icon: Box,
-    elevate: 0,
-    rotateZ: 0,
   },
   {
     num: '04',
@@ -64,8 +57,6 @@ const STEPS: StepData[] = [
     desc: 'Launch, publish and set everything live across the right platforms.',
     accent: 'purple',
     icon: Rocket,
-    elevate: -20,
-    rotateZ: 1.5,
   },
   {
     num: '05',
@@ -73,8 +64,6 @@ const STEPS: StepData[] = [
     desc: 'Track, optimize and scale for long-term compounding results.',
     accent: 'orange',
     icon: TrendingUp,
-    elevate: -40,
-    rotateZ: 3,
   },
 ]
 
@@ -93,6 +82,21 @@ export const ThreadEngine: React.FC = () => {
   const fanRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLDivElement>(null)
   const [activeCard, setActiveCard] = useState<number | null>(null)
+  const [poweredCardCount, setPoweredCardCount] = useState(0)
+  const [ignitingCardIndexes, setIgnitingCardIndexes] = useState<number[]>([])
+
+  const handleEnergyActivationChange = useCallback(
+    (count: number, ignitingIndex: number) => {
+      setPoweredCardCount(count)
+      setIgnitingCardIndexes((current) => {
+        const stillPowered = current.filter((index) => index < count)
+        return ignitingIndex >= 0 && !stillPowered.includes(ignitingIndex)
+          ? [...stillPowered, ignitingIndex]
+          : stillPowered
+      })
+    },
+    [],
+  )
 
   useEffect(() => {
     if (reduced || !sectionRef.current) return
@@ -115,7 +119,7 @@ export const ThreadEngine: React.FC = () => {
         }
       )
 
-      // 5-card ascending fan stagger reveal
+      // Stagger the Approach card reveal
       gsap.fromTo(
         '.approach-fan-card',
         { opacity: 0, y: 50, scale: 0.94 },
@@ -126,22 +130,9 @@ export const ThreadEngine: React.FC = () => {
           duration: 0.75,
           ease: 'power3.out',
           stagger: 0.1,
-          scrollTrigger: {
-            trigger: fanRef.current,
-            start: 'top 80%',
-            once: true,
+          onComplete: () => {
+            window.dispatchEvent(new Event('neutron-star-transfer-layout'))
           },
-        }
-      )
-
-      // Thread spline path draw-in
-      gsap.fromTo(
-        '.approach-thread-line',
-        { strokeDashoffset: 1200 },
-        {
-          strokeDashoffset: 0,
-          duration: 1.8,
-          ease: 'power2.out',
           scrollTrigger: {
             trigger: fanRef.current,
             start: 'top 80%',
@@ -172,10 +163,12 @@ export const ThreadEngine: React.FC = () => {
   }, [reduced])
 
   return (
+    <>
+      <NeutronStarTransfer onActivationChange={handleEnergyActivationChange} />
     <section
       ref={sectionRef}
       id="the-engine"
-      className="relative w-full py-24 sm:py-32 px-6 lg:px-16 bg-[#101519] overflow-hidden"
+      className="relative w-full py-24 sm:py-32 px-6 lg:px-16 bg-[#0a0c0d] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto space-y-16">
         {/* ── Main Two-Column Stage ── */}
@@ -234,91 +227,77 @@ export const ThreadEngine: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: 5-Card Ascending Diagonal 3D Perspective Fan */}
+          {/* Right Column: Responsive square Approach cards */}
           <div
             ref={fanRef}
             className="lg:col-span-7 relative pt-8 pb-12 overflow-visible"
-            style={{ perspective: '1200px' }}
           >
-            {/* Continuous Glowing Neon Thread Ribbon */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-20"
-              viewBox="0 0 650 380"
-              fill="none"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id="fanRibbonGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#FF5400" stopOpacity="0.85" />
-                  <stop offset="45%" stopColor="#8824FF" stopOpacity="0.9" />
-                  <stop offset="80%" stopColor="#FF5400" stopOpacity="0.85" />
-                  <stop offset="100%" stopColor="#E9ECEF" stopOpacity="0.7" />
-                </linearGradient>
-                <filter id="ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="4" result="glow" />
-                  <feMerge>
-                    <feMergeNode in="glow" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Glowing Ambient Path */}
-              <path
-                d="M 20 280 C 130 320, 180 200, 270 210 S 420 130, 490 100 S 580 40, 630 60"
-                stroke="url(#fanRibbonGrad)"
-                strokeWidth="4"
-                strokeLinecap="round"
-                fill="none"
-                filter="url(#ribbonGlow)"
-                className="opacity-70"
-              />
-
-              {/* Crisp Center Kinetic Fiber */}
-              <path
-                d="M 20 280 C 130 320, 180 200, 270 210 S 420 130, 490 100 S 580 40, 630 60"
-                stroke="#FFFFFF"
-                strokeWidth="1.5"
-                strokeDasharray="6 8"
-                strokeLinecap="round"
-                fill="none"
-                className="approach-thread-line opacity-85"
-                style={{ strokeDasharray: 1200 }}
-              />
-            </svg>
-
-            {/* 5 Tall Glass Cards in Ascending Diagonal Fan */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5 sm:gap-3 lg:gap-4 items-end relative z-10">
+            <div className="grid grid-cols-1 min-[480px]:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 items-stretch relative z-[31]">
               {STEPS.map((step, idx) => {
                 const isOrange = step.accent === 'orange'
                 const accentColor = isOrange ? '#FF5400' : '#8824FF'
                 const isHovered = activeCard === idx
+                const isPowered = idx < poweredCardCount
+                const isIgniting =
+                  ignitingCardIndexes.includes(idx) && !reduced
+                const energyColor = idx % 2 === 0 ? '#FB5607' : '#8338EC'
+                const placementClass =
+                  idx === 3
+                    ? 'md:col-start-2'
+                    : idx === 4
+                      ? 'min-[480px]:col-start-2 md:col-start-4'
+                      : ''
                 const IconComponent = step.icon
 
                 return (
                   <div
                     key={step.num}
-                    className="approach-fan-card group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-500 ease-out min-h-[300px] sm:min-h-[360px]"
+                    data-approach-card={step.num}
+                    className={`approach-fan-card group relative col-span-1 min-[480px]:col-span-2 flex aspect-square min-h-0 flex-col justify-between rounded-none p-3 sm:p-4 cursor-pointer transition-all duration-500 ease-out ${placementClass} ${isPowered ? 'approach-energy-powered' : ''} ${isIgniting ? 'approach-energy-ignition' : ''}`}
                     style={{
+                      filter: isPowered
+                        ? 'grayscale(0) brightness(1)'
+                        : 'grayscale(1) brightness(0.72)',
                       background: isHovered
                         ? 'linear-gradient(180deg, rgba(35,39,45,0.88) 0%, rgba(18,20,23,0.92) 100%)'
-                        : 'linear-gradient(180deg, rgba(24,27,31,0.68) 0%, rgba(12,14,16,0.78) 100%)',
+                        : isPowered
+                          ? `linear-gradient(180deg, ${energyColor}18 0%, rgba(24,27,31,0.78) 48%, rgba(12,14,16,0.82) 100%)`
+                          : 'linear-gradient(180deg, rgba(24,27,31,0.68) 0%, rgba(12,14,16,0.78) 100%)',
                       backdropFilter: 'blur(24px)',
                       WebkitBackdropFilter: 'blur(24px)',
                       border: isHovered
                         ? `1px solid ${accentColor}90`
-                        : '1px solid rgba(233,236,239,0.11)',
+                        : isPowered
+                          ? `1px solid ${energyColor}90`
+                          : '1px solid rgba(233,236,239,0.11)',
                       boxShadow: isHovered
                         ? `0 0 35px -5px ${accentColor}55, 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.18)`
-                        : '0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)',
-                      transform: isHovered
-                        ? `translateY(${step.elevate - 14}px) rotateZ(0deg) scale(1.05)`
-                        : `translateY(${step.elevate}px) rotateZ(${step.rotateZ}deg) scale(1)`,
-                      transformOrigin: 'bottom center',
+                        : isPowered
+                          ? `0 0 30px -14px ${energyColor}90, 0 12px 30px rgba(0,0,0,0.35), inset 0 0 24px ${energyColor}14, inset 0 1px 0 rgba(255,255,255,0.08)`
+                          : '0 12px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)',
+                      transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                      transformOrigin: 'center center',
                       zIndex: isHovered ? 30 : idx + 1,
                     }}
                     onMouseEnter={() => setActiveCard(idx)}
                     onMouseLeave={() => setActiveCard(null)}
+                    onAnimationEnd={(event) => {
+                      if (
+                        event.target === event.currentTarget &&
+                        event.animationName === 'neutron-card-ignition'
+                      ) {
+                        setIgnitingCardIndexes((current) =>
+                          current.filter((index) => index !== idx),
+                        )
+                      }
+                    }}
+                    onTransitionEnd={(event) => {
+                      if (event.propertyName === 'transform') {
+                        window.dispatchEvent(
+                          new Event('neutron-star-transfer-layout'),
+                        )
+                      }
+                    }}
                   >
                     {/* Top Edge Neon Color Glow */}
                     <div
@@ -331,24 +310,26 @@ export const ThreadEngine: React.FC = () => {
 
                     {/* Atmospheric internal radial glow on hover */}
                     <div
-                      className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
+                      className={`absolute inset-0 rounded-none pointer-events-none transition-opacity duration-500 ${isPowered ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                       style={{
-                        background: `radial-gradient(circle at 50% 20%, ${accentColor}18 0%, transparent 70%)`,
+                        background: `radial-gradient(circle at 50% 20%, ${isPowered ? `${energyColor}24` : `${accentColor}18`} 0%, transparent 70%)`,
                       }}
                     />
 
                     {/* Card Content Top: 3D-styled luminous Icon badge */}
-                    <div className="relative z-10 flex flex-col items-start gap-4">
+                    <div className="relative z-10 flex flex-col items-start gap-2 sm:gap-3">
                       <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                        className={`approach-energy-icon flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110 sm:h-10 sm:w-10 ${isPowered ? 'approach-energy-icon-powered' : ''}`}
                         style={{
                           background: `linear-gradient(135deg, ${accentColor}25 0%, rgba(28,32,36,0.6) 100%)`,
-                          border: `1px solid ${accentColor}50`,
-                          boxShadow: `0 0 20px -3px ${accentColor}40, inset 0 1px 0 rgba(255,255,255,0.15)`,
+                          border: `1px solid ${isPowered ? `${energyColor}90` : `${accentColor}50`}`,
+                          boxShadow: isPowered
+                            ? `0 0 22px -4px ${energyColor}90, inset 0 0 12px ${energyColor}18, inset 0 1px 0 rgba(255,255,255,0.15)`
+                            : `0 0 20px -3px ${accentColor}40, inset 0 1px 0 rgba(255,255,255,0.15)`,
                         }}
                       >
                         <IconComponent
-                          size={22}
+                          size={18}
                           color={accentColor}
                           className="transition-colors duration-300"
                         />
@@ -368,11 +349,11 @@ export const ThreadEngine: React.FC = () => {
                     </div>
 
                     {/* Card Content Bottom: Title & Description */}
-                    <div className="relative z-10 flex flex-col gap-2 pt-6">
-                      <h3 className="card-heading text-[#E9ECEF] group-hover:text-white transition-colors">
+                    <div className="relative z-10 flex flex-col gap-1.5 pt-3 sm:pt-4">
+                      <h3 className="card-heading text-[15px] text-[#E9ECEF] transition-colors group-hover:text-white sm:text-base">
                         {step.title}
                       </h3>
-                      <p className="card-desc text-[#E9ECEF]/70 leading-relaxed group-hover:text-[#E9ECEF]/90 transition-colors">
+                      <p className="card-desc text-[11px] leading-snug text-[#E9ECEF]/70 transition-colors group-hover:text-[#E9ECEF]/90 sm:text-xs">
                         {step.desc}
                       </p>
 
@@ -431,5 +412,6 @@ export const ThreadEngine: React.FC = () => {
         </div>
       </div>
     </section>
+    </>
   )
 }

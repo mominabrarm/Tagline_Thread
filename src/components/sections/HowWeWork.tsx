@@ -178,7 +178,7 @@ export const HowWeWork: React.FC = () => {
     <section
       ref={sectionRef}
       id="process"
-      className="relative w-full py-20 sm:py-28 px-6 lg:px-12 xl:px-16 bg-[#101519] overflow-hidden select-none"
+      className="relative w-full py-20 sm:py-28 px-6 lg:px-12 xl:px-16 bg-[#0a0c0d] overflow-hidden select-none"
     >
       {/* Floating Gentle Levitation Keyframes */}
       <style>{`

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --color-bg:       #101519;
+    --color-bg:       #0a0c0d;
     --color-ash:      #E9ECEF;
     --color-orange:   #FF5400;
     --color-purple:   #8824FF;
@@ -26,7 +26,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
-    background-color: #101519;
+    background-color: var(--color-bg);
   }
 
   * { box-sizing: border-box; }
@@ -302,6 +302,41 @@ body::before {
   }
 }
 
+@keyframes neutron-card-ignition {
+  0% {
+    filter: brightness(1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  }
+  34% {
+    filter: brightness(1.48);
+    box-shadow:
+      0 0 44px -4px rgba(131, 56, 236, 0.85),
+      0 0 28px -8px rgba(251, 86, 7, 0.55),
+      inset 0 0 28px rgba(233, 236, 239, 0.2);
+  }
+  100% {
+    filter: brightness(1);
+    box-shadow: 0 0 30px -14px rgba(131, 56, 236, 0.5);
+  }
+}
+
+@keyframes neutron-icon-ignition {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  35% {
+    filter: brightness(1.8);
+  }
+}
+
+.approach-energy-ignition {
+  animation: neutron-card-ignition 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.approach-energy-ignition .approach-energy-icon {
+  animation: neutron-icon-ignition 720ms ease-out both;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -311,4 +346,3 @@ body::before {
   }
   html { scroll-behavior: auto; }
 }
-

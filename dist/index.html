@@ -9,12 +9,69 @@
     <title>Tagline-Thread — Where Ideas Are Woven Into Identity</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-BlQmEiMi.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/lucide-vendor-DBnIlzl8.js">
-    <link rel="modulepreload" crossorigin href="/assets/three-vendor-BhfP8Tvi.js">
+    <link rel="preconnect" href="https://prod.spline.design" />
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // 1. Filter out duplicate Three.js & Spline runtime console warnings
+      (function() {
+        const origWarn = console.warn;
+        console.warn = function(...args) {
+          if (args[0] && typeof args[0] === 'string') {
+            const msg = args[0];
+            if (
+              msg.includes('Multiple instances of Three.js') ||
+              msg.includes('THREE.WARNING') ||
+              msg.includes('updating from') ||
+              msg.includes('more recent than the library') ||
+              msg.includes('powerPreference option is currently ignored')
+            ) {
+              return;
+            }
+          }
+          origWarn.apply(console, args);
+        };
+      })();
+
+      // 2. Intercept unpkg SMAA texture requests to prevent 404 & CORS errors in unpkg 2.x
+      (function() {
+        const transparentPng = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+        const origFetch = window.fetch;
+        window.fetch = function(input, init) {
+          const url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+          if (url && (url.includes('smaa-search.png') || url.includes('smaa-area.png'))) {
+            return Promise.resolve(new Response(new Blob([], { type: 'image/png' }), { status: 200 }));
+          }
+          return origFetch.apply(this, arguments);
+        };
+
+        const origImage = window.Image;
+        window.Image = function(...args) {
+          const img = new origImage(...args);
+          let realSrc = '';
+          Object.defineProperty(img, 'src', {
+            get() { return realSrc; },
+            set(val) {
+              if (typeof val === 'string' && (val.includes('smaa-search.png') || val.includes('smaa-area.png'))) {
+                realSrc = transparentPng;
+                img.setAttribute('src', transparentPng);
+              } else {
+                realSrc = val;
+                img.setAttribute('src', val);
+              }
+            }
+          });
+          return img;
+        };
+      })();
+    </script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+   
+    <script type="module" crossorigin src="/assets/index-CPmF531c.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/lucide-vendor-BN8Xkwgt.js">
+    <link rel="modulepreload" crossorigin href="/assets/three-vendor-CUV67kse.js">
     <link rel="modulepreload" crossorigin href="/assets/gsap-vendor-DdEiTQuA.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-CcfJ31k9.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-Bq5whyHU.css">
   </head>
   <body>
     <div id="root"></div>

@@ -47,7 +47,7 @@ export const ServiceSideCard: React.FC<ServiceSideCardProps> = ({
     <div
       onClick={onSelect}
       className={`group relative rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-500 ease-out min-w-[200px] sm:min-w-[220px] max-w-[240px] h-[340px] select-none ${
-        isActive ? 'ring-2 ring-offset-2 ring-offset-[#101519]' : 'opacity-85 hover:opacity-100'
+        isActive ? 'ring-2 ring-offset-2 ring-offset-[#0a0c0d]' : 'opacity-85 hover:opacity-100'
       }`}
       style={{
         background: 'linear-gradient(180deg, rgba(24, 27, 31, 0.72) 0%, rgba(12, 14, 16, 0.88) 100%)',

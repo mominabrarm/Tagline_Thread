@@ -1,22 +1,17 @@
 import React from 'react'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
-import { Hero } from './components/sections/Hero'
-import { About } from './components/sections/About'
+import { HeroAboutExperience } from './components/sections/HeroAboutExperience'
 import { ThreadEngine } from './components/sections/ThreadEngine'
 import { Services } from './components/sections/Services'
 import { Portfolio } from './components/sections/Portfolio'
 import { HowWeWork } from './components/sections/HowWeWork'
 import { Contact } from './components/sections/Contact'
 import { WhatsAppButton } from './components/ui/WhatsAppButton'
-import { TTOrbitCursor } from './components/ui/TTOrbitCursor'
 
 const App: React.FC = () => {
   return (
     <>
-      {/* Custom TT Orbit Cursor */}
-      <TTOrbitCursor />
-
       {/* Floating Navigation Dock */}
       <Navbar />
 
@@ -29,11 +24,8 @@ const App: React.FC = () => {
           Skip to main content
         </a>
 
-        {/* 01 // HERO */}
-        <Hero />
-
-        {/* 02 // OUR PHILOSOPHY */}
-        <About />
+        {/* 01 & 02 // HERO & ABOUT (Continuous Spline 3D Experience) */}
+        <HeroAboutExperience />
 
         {/* 03 // OUR APPROACH */}
         <ThreadEngine />

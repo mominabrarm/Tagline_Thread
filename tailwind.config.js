@@ -8,7 +8,7 @@ export default {
     extend: {
       colors: {
         // Brand Palette - Volcanic Ash (Darker near-black dominant & hyper-saturated accents)
-        'brand-bg':        '#101519',
+        'brand-bg':        '#0a0c0d',
         'brand-ash':       '#E9ECEF',
         'brand-orange':    '#FF5400',
         'brand-purple':    '#8824FF',

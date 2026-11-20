@@ -94,7 +94,7 @@ export const Portfolio: React.FC = () => {
     <section
       ref={sectionRef}
       id="our-work"
-      className="relative w-full py-24 sm:py-32 px-6 lg:px-16 bg-[#101519] overflow-hidden"
+      className="relative w-full py-24 sm:py-32 px-6 lg:px-16 bg-[#0a0c0d] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto space-y-12">
         {/* ── Top Header Row ── */}
