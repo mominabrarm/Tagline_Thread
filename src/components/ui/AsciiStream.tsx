@@ -8,13 +8,96 @@ interface AsciiStreamProps {
 
 const GLYPHS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const PURPLE = '131, 56, 236'
-const ORANGE = '251, 86, 7'
+const PURPLE_HEX = '#8338EC'
+const ORANGE = '250, 86, 8'
+const ORANGE_HEX = '#fa5608'
 const SOFT_WHITE = '233, 236, 239'
+const WHITE_HEX = '#E9ECEF'
 const TRAIL_COUNT = 70
 const TRAIL_OFFSETS = Array.from(
   { length: TRAIL_COUNT },
   (_, index) => 0.02 + 0.95 * ((index + 1) / TRAIL_COUNT) ** 1.35,
 )
+
+interface LaneColorConfig {
+  startRgb: string
+  midRgb: string
+  endRgb: string
+  startHex: string
+  midHex: string
+  endHex: string
+  glowHex: string
+}
+
+// Randomly combine both colors (#fa5608 and #8338EC) across distinct lanes
+const LANE_CONFIGS: LaneColorConfig[] = Array.from({ length: TRAIL_COUNT }, (_, lane) => {
+  // Deterministic pseudo-random seed per lane for consistent 60fps rendering without frame jitter
+  const r1 = Math.abs(Math.sin((lane + 1) * 12.9898 + (lane % 5) * 78.233)) % 1
+  const r2 = Math.abs(Math.cos((lane + 1) * 37.719 + lane * 19.317)) % 1
+
+  // Accent highlights (soft white glow) on select distinct lanes
+  if (lane === 11 || (r1 > 0.94 && lane % 7 === 0)) {
+    return {
+      startRgb: SOFT_WHITE,
+      midRgb: SOFT_WHITE,
+      endRgb: SOFT_WHITE,
+      startHex: WHITE_HEX,
+      midHex: WHITE_HEX,
+      endHex: WHITE_HEX,
+      glowHex: WHITE_HEX,
+    }
+  }
+
+  // Dual-color hybrid lanes: Orange (#fa5608) blending into Purple (#8338EC)
+  if (r1 < 0.28) {
+    return {
+      startRgb: ORANGE,
+      midRgb: r2 > 0.5 ? ORANGE : PURPLE,
+      endRgb: PURPLE,
+      startHex: ORANGE_HEX,
+      midHex: r2 > 0.5 ? ORANGE_HEX : PURPLE_HEX,
+      endHex: PURPLE_HEX,
+      glowHex: ORANGE_HEX,
+    }
+  }
+
+  // Dual-color hybrid lanes: Purple (#8338EC) blending into Orange (#fa5608)
+  if (r1 < 0.52) {
+    return {
+      startRgb: PURPLE,
+      midRgb: r2 > 0.5 ? PURPLE : ORANGE,
+      endRgb: ORANGE,
+      startHex: PURPLE_HEX,
+      midHex: r2 > 0.5 ? PURPLE_HEX : ORANGE_HEX,
+      endHex: ORANGE_HEX,
+      glowHex: PURPLE_HEX,
+    }
+  }
+
+  // Distinct Pure Orange lanes (#fa5608)
+  if (r1 < 0.78) {
+    return {
+      startRgb: ORANGE,
+      midRgb: ORANGE,
+      endRgb: ORANGE,
+      startHex: ORANGE_HEX,
+      midHex: ORANGE_HEX,
+      endHex: ORANGE_HEX,
+      glowHex: ORANGE_HEX,
+    }
+  }
+
+  // Distinct Pure Purple lanes (#8338EC)
+  return {
+    startRgb: PURPLE,
+    midRgb: PURPLE,
+    endRgb: PURPLE,
+    startHex: PURPLE_HEX,
+    midHex: PURPLE_HEX,
+    endHex: PURPLE_HEX,
+    glowHex: PURPLE_HEX,
+  }
+})
 
 export const AsciiStream: React.FC<AsciiStreamProps> = ({
   className = '',
@@ -74,9 +157,7 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
 
       for (let lane = 0; lane < TRAIL_OFFSETS.length; lane += 1) {
         const offsetScale = TRAIL_OFFSETS[lane]
-        const color = lane === 41 ? ORANGE : lane === 11 ? SOFT_WHITE : PURPLE
-        const colorHex =
-          color === PURPLE ? '#8338EC' : color === ORANGE ? '#FB5607' : '#E9ECEF'
+        const laneCfg = LANE_CONFIGS[lane]
         const offset = corridorRadius * offsetScale
         const wideLane = lane % 5 === 2 || lane % 5 === 4
         const wideWidth = wideLane
@@ -135,10 +216,10 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
 
             if (isGlowTrail) {
               drawFullTrail()
-              context.strokeStyle = `rgba(${color}, ${trailAlpha * 0.34})`
+              context.strokeStyle = `rgba(${laneCfg.startRgb}, ${trailAlpha * 0.34})`
               context.lineWidth = wideLane ? wideWidth + 2 : offsetScale >= 0.9 ? 7 : 5
               context.shadowBlur = wideLane ? wideWidth * 1.35 : offsetScale >= 0.9 ? 16 : 10
-              context.shadowColor = colorHex
+              context.shadowColor = laneCfg.glowHex
               context.stroke()
               context.shadowBlur = 0
             }
@@ -149,9 +230,9 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
               centerX,
               endY,
             )
-            trailGradient.addColorStop(0, `rgba(${color}, ${trailAlpha * 1.7})`)
-            trailGradient.addColorStop(0.62, `rgba(${color}, ${trailAlpha})`)
-            trailGradient.addColorStop(1, `rgba(${color}, ${trailAlpha * 0.38})`)
+            trailGradient.addColorStop(0, `rgba(${laneCfg.startRgb}, ${trailAlpha * 1.7})`)
+            trailGradient.addColorStop(0.5, `rgba(${laneCfg.midRgb}, ${trailAlpha * 1.15})`)
+            trailGradient.addColorStop(1, `rgba(${laneCfg.endRgb}, ${trailAlpha * 0.38})`)
             drawFullTrail()
             context.strokeStyle = trailGradient
             context.lineWidth =
@@ -177,10 +258,10 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
                 streakTo.x,
                 streakTo.y,
               )
-              streakGradient.addColorStop(0, `rgba(${color}, 0)`)
-              streakGradient.addColorStop(0.55, `rgba(${color}, 0.32)`)
-              streakGradient.addColorStop(0.9, `rgba(${color}, 0.88)`)
-              streakGradient.addColorStop(1, `rgba(${color}, 0.96)`)
+              streakGradient.addColorStop(0, `rgba(${laneCfg.startRgb}, 0)`)
+              streakGradient.addColorStop(0.55, `rgba(${laneCfg.midRgb}, 0.32)`)
+              streakGradient.addColorStop(0.9, `rgba(${laneCfg.endRgb}, 0.88)`)
+              streakGradient.addColorStop(1, `rgba(${laneCfg.endRgb}, 0.96)`)
 
               context.beginPath()
               context.moveTo(streakFrom.x, streakFrom.y)
@@ -191,7 +272,7 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
               context.strokeStyle = streakGradient
               context.lineWidth = wideLane ? wideWidth * 0.85 : isGlowTrail ? 2.2 : 1.45
               context.shadowBlur = wideLane ? wideWidth * 0.7 : isGlowTrail ? 10 : 5
-              context.shadowColor = colorHex
+              context.shadowColor = laneCfg.glowHex
               context.stroke()
               context.shadowBlur = 0
             }
@@ -200,10 +281,10 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
               const particle = pointAt((flow * 0.8 + lane * 0.19 + side * 0.13) % 1)
               context.beginPath()
               context.arc(particle.x, particle.y, 1.1, 0, Math.PI * 2)
-              context.fillStyle = colorHex
+              context.fillStyle = laneCfg.glowHex
               context.globalAlpha = 0.36
               context.shadowBlur = 6
-              context.shadowColor = colorHex
+              context.shadowColor = laneCfg.glowHex
               context.fill()
               context.shadowBlur = 0
               context.globalAlpha = 1
@@ -233,7 +314,7 @@ export const AsciiStream: React.FC<AsciiStreamProps> = ({
                 context.translate(point.x, point.y)
                 context.rotate(angle)
                 context.globalAlpha = 0.14 + 0.06 * Math.sin(phase + glyph + lane)
-                context.fillStyle = `rgba(${color}, 0.9)`
+                context.fillStyle = `rgba(${laneCfg.midRgb}, 0.9)`
                 context.fillText(
                   GLYPHS[(lane * 11 + glyph * 7) % GLYPHS.length],
                   0,
